@@ -3,23 +3,24 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 70;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		1D1A1A1A1A1A1A1A1A1A1A1A /* BSUIRApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1A1A1A1A1A1A1A1A1A1B /* BSUIRApp.swift */; };
+		1D1A1A1A1A1A1A1A1A1A1A1C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A1A1A1A1A1A1A1A1A1A1D /* ContentView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
-		F564A8D42E76F8CE002E60B1 /* cPPiIS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = cPPiIS.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D1A1A1A1A1A1A1A1A1A1A1A /* BSUIRApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BSUIRApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1D1A1A1A1A1A1A1A1A1A1A1B /* BSUIRApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BSUIRApp.swift; sourceTree = "<group>"; };
+		1D1A1A1A1A1A1A1A1A1A1A1D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		1D1A1A1A1A1A1A1A1A1A1A1E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		1D1A1A1A1A1A1A1A1A1A1A1F /* Config.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Config.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		F564A8D62E76F8CE002E60B1 /* cPPiIS */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = cPPiIS;
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
-
 /* Begin PBXFrameworksBuildPhase section */
-		F564A8D12E76F8CE002E60B1 /* Frameworks */ = {
+		1D1A1A1A1A1A1A1A1A1A1A17 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -29,83 +30,113 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		F564A8CB2E76F8CE002E60B1 = {
+		1D1A1A1A1A1A1A1A1A1A1A11 = {
 			isa = PBXGroup;
 			children = (
-				F564A8D62E76F8CE002E60B1 /* cPPiIS */,
-				F564A8D52E76F8CE002E60B1 /* Products */,
+				1D1A1A1A1A1A1A1A1A1A1A1C /* BSUIRApp */,
+				1D1A1A1A1A1A1A1A1A1A1A1B /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		F564A8D52E76F8CE002E60B1 /* Products */ = {
+		1D1A1A1A1A1A1A1A1A1A1A1B /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F564A8D42E76F8CE002E60B1 /* cPPiIS.app */,
+				1D1A1A1A1A1A1A1A1A1A1A1A /* BSUIRApp.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		1D1A1A1A1A1A1A1A1A1A1A1C /* BSUIRApp */ = {
+			isa = PBXGroup;
+			children = (
+				1D1A1A1A1A1A1A1A1A1A1A1B /* BSUIRApp.swift */,
+				1D1A1A1A1A1A1A1A1A1A1A1D /* ContentView.swift */,
+				1D1A1A1A1A1A1A1A1A1A1A1F /* Config.h */,
+				1D1A1A1A1A1A1A1A1A1A1A20 /* Core */,
+				1D1A1A1A1A1A1A1A1A1A1A21 /* Bridge */,
+				1D1A1A1A1A1A1A1A1A1A1A22 /* Views */,
+				1D1A1A1A1A1A1A1A1A1A1A1E /* Info.plist */,
+			);
+			path = BSUIRApp;
+			sourceTree = "<group>";
+		};
+		1D1A1A1A1A1A1A1A1A1A1A20 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		1D1A1A1A1A1A1A1A1A1A1A21 /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
+		1D1A1A1A1A1A1A1A1A1A1A22 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F564A8D32E76F8CE002E60B1 /* cPPiIS */ = {
+		1D1A1A1A1A1A1A1A1A1A1A19 /* BSUIRApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F564A8DF2E76F8D0002E60B1 /* Build configuration list for PBXNativeTarget "cPPiIS" */;
+			buildConfigurationList = 1D1A1A1A1A1A1A1A1A1A1A28 /* Build configuration list for PBXNativeTarget "BSUIRApp" */;
 			buildPhases = (
-				F564A8D02E76F8CE002E60B1 /* Sources */,
-				F564A8D12E76F8CE002E60B1 /* Frameworks */,
-				F564A8D22E76F8CE002E60B1 /* Resources */,
+				1D1A1A1A1A1A1A1A1A1A1A16 /* Sources */,
+				1D1A1A1A1A1A1A1A1A1A1A17 /* Frameworks */,
+				1D1A1A1A1A1A1A1A1A1A1A18 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				F564A8D62E76F8CE002E60B1 /* cPPiIS */,
-			);
-			name = cPPiIS;
-			packageProductDependencies = (
-			);
-			productName = cPPiIS;
-			productReference = F564A8D42E76F8CE002E60B1 /* cPPiIS.app */;
+			name = BSUIRApp;
+			productName = BSUIRApp;
+			productReference = 1D1A1A1A1A1A1A1A1A1A1A1A /* BSUIRApp.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		F564A8CC2E76F8CE002E60B1 /* Project object */ = {
+		1D1A1A1A1A1A1A1A1A1A1A12 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1640;
 				LastUpgradeCheck = 1640;
 				TargetAttributes = {
-					F564A8D32E76F8CE002E60B1 = {
+					1D1A1A1A1A1A1A1A1A1A1A19 = {
 						CreatedOnToolsVersion = 16.4;
 					};
 				};
 			};
-			buildConfigurationList = F564A8CF2E76F8CE002E60B1 /* Build configuration list for PBXProject "cPPiIS" */;
-			developmentRegion = en;
+			buildConfigurationList = 1D1A1A1A1A1A1A1A1A1A1A15 /* Build configuration list for PBXProject "BSUIRApp" */;
+			compatibilityVersion = "Xcode 15.0";
+			developmentRegion = ru;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				ru,
 				en,
 				Base,
 			);
-			mainGroup = F564A8CB2E76F8CE002E60B1;
-			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
-			productRefGroup = F564A8D52E76F8CE002E60B1 /* Products */;
+			mainGroup = 1D1A1A1A1A1A1A1A1A1A1A11;
+			productRefGroup = 1D1A1A1A1A1A1A1A1A1A1A1B /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F564A8D32E76F8CE002E60B1 /* cPPiIS */,
+				1D1A1A1A1A1A1A1A1A1A1A19 /* BSUIRApp */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		F564A8D22E76F8CE002E60B1 /* Resources */ = {
+		1D1A1A1A1A1A1A1A1A1A1A18 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -115,17 +146,19 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		F564A8D02E76F8CE002E60B1 /* Sources */ = {
+		1D1A1A1A1A1A1A1A1A1A1A16 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D1A1A1A1A1A1A1A1A1A1A1C /* ContentView.swift in Sources */,
+				1D1A1A1A1A1A1A1A1A1A1A1A /* BSUIRApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		F564A8DD2E76F8D0002E60B1 /* Debug */ = {
+		1D1A1A1A1A1A1A1A1A1A1A26 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -160,7 +193,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = Y85TSUMM4F;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -178,7 +210,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -189,7 +221,7 @@
 			};
 			name = Debug;
 		};
-		F564A8DE2E76F8D0002E60B1 /* Release */ = {
+		1D1A1A1A1A1A1A1A1A1A1A27 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -224,7 +256,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = Y85TSUMM4F;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -236,7 +267,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -246,92 +277,132 @@
 			};
 			name = Release;
 		};
-		F564A8E02E76F8D0002E60B1 /* Debug */ = {
+		1D1A1A1A1A1A1A1A1A1A1A29 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = Y85TSUMM4F;
+				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = BSUIRApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.OrDinaD.cPPiIS;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = by.bsuir.app.course.cpp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "cPPiIS/cPPiIS-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				
+				// C++ Configuration
+				CLANG_ENABLE_CPP = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				
+				// Objective-C++ Configuration
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-std=gnu++20",
+				);
+				
+				// Header Search Paths
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/BSUIRApp/Core",
+					"$(SRCROOT)/BSUIRApp/Bridge",
+				);
+				
+				// Bridging Header
+				SWIFT_OBJC_BRIDGING_HEADER = "BSUIRApp/Bridge/BSUIRApp-Bridging-Header.h";
 			};
 			name = Debug;
 		};
-		F564A8E12E76F8D0002E60B1 /* Release */ = {
+		1D1A1A1A1A1A1A1A1A1A1A2A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = Y85TSUMM4F;
+				DEVELOPMENT_ASSET_PATHS = "";
 				ENABLE_PREVIEWS = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = BSUIRApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.OrDinaD.cPPiIS;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = by.bsuir.app.course.cpp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "cPPiIS/cPPiIS-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				
+				// C++ Configuration
+				CLANG_ENABLE_CPP = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				
+				// Objective-C++ Configuration
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-std=gnu++20",
+				);
+				
+				// Header Search Paths
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/BSUIRApp/Core",
+					"$(SRCROOT)/BSUIRApp/Bridge",
+				);
+				
+				// Bridging Header
+				SWIFT_OBJC_BRIDGING_HEADER = "BSUIRApp/Bridge/BSUIRApp-Bridging-Header.h";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F564A8CF2E76F8CE002E60B1 /* Build configuration list for PBXProject "cPPiIS" */ = {
+		1D1A1A1A1A1A1A1A1A1A1A15 /* Build configuration list for PBXProject "BSUIRApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F564A8DD2E76F8D0002E60B1 /* Debug */,
-				F564A8DE2E76F8D0002E60B1 /* Release */,
+				1D1A1A1A1A1A1A1A1A1A1A26 /* Debug */,
+				1D1A1A1A1A1A1A1A1A1A1A27 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F564A8DF2E76F8D0002E60B1 /* Build configuration list for PBXNativeTarget "cPPiIS" */ = {
+		1D1A1A1A1A1A1A1A1A1A1A28 /* Build configuration list for PBXNativeTarget "BSUIRApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				F564A8E02E76F8D0002E60B1 /* Debug */,
-				F564A8E12E76F8D0002E60B1 /* Release */,
+				1D1A1A1A1A1A1A1A1A1A1A29 /* Debug */,
+				1D1A1A1A1A1A1A1A1A1A1A2A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = F564A8CC2E76F8CE002E60B1 /* Project object */;
+	rootObject = 1D1A1A1A1A1A1A1A1A1A1A12 /* Project object */;
 }

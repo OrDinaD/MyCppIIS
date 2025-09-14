@@ -1,0 +1,259 @@
+//
+//  BSUIRAPIBridge.mm
+//  BSUIRApp Objective-C++ Bridge Implementation
+//
+
+#import "BSUIRAPIBridge.h"
+#import "BSUIRModels.h"
+#include "../Core/ApiService.hpp"
+#include "../Config.h"
+#include <memory>
+
+@interface BSUIRAPIBridge () {
+    std::unique_ptr<BSUIR::ApiService> _apiService;
+}
+@end
+
+@implementation BSUIRAPIBridge
+
++ (instancetype)shared {
+    static BSUIRAPIBridge *sharedInstance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        sharedInstance = [[self alloc] init];
+    });
+    return sharedInstance;
+}
+
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        _apiService = std::make_unique<BSUIR::ApiService>(API_BASE_URL);
+    }
+    return self;
+}
+
+#pragma mark - Authentication
+
+- (void)loginWithStudentNumber:(NSString*)studentNumber 
+                      password:(NSString*)password 
+                    completion:(BSUIRLoginCompletion)completion {
+    
+    if (!studentNumber || !password || !completion) {
+        NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
+                                             code:BSUIRAPIErrorInvalidCredentials 
+                                         userInfo:@{NSLocalizedDescriptionKey: @"Invalid credentials provided"}];
+        completion(nil, error);
+        return;
+    }
+    
+    std::string stdStudentNumber = [studentNumber UTF8String];
+    std::string stdPassword = [password UTF8String];
+    
+    _apiService->login(stdStudentNumber, stdPassword, [completion](const BSUIR::ApiResult<BSUIR::LoginResponse>& result) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (result.success && result.data.has_value()) {
+                const auto& loginData = result.data.value();
+                
+                BSUIRUser *user = [[BSUIRUser alloc] init];
+                user.studentNumber = [NSString stringWithUTF8String:loginData.studentNumber.c_str()];
+                user.firstName = [NSString stringWithUTF8String:loginData.firstName.c_str()];
+                user.lastName = [NSString stringWithUTF8String:loginData.lastName.c_str()];
+                user.middleName = [NSString stringWithUTF8String:loginData.middleName.c_str()];
+                user.accessToken = [NSString stringWithUTF8String:loginData.accessToken.c_str()];
+                user.refreshToken = [NSString stringWithUTF8String:loginData.refreshToken.c_str()];
+                user.userId = loginData.userId;
+                user.expiresIn = loginData.expiresIn;
+                
+                completion(user, nil);
+            } else if (result.error.has_value()) {
+                const auto& apiError = result.error.value();
+                NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
+                                                     code:apiError.code 
+                                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithUTF8String:apiError.message.c_str()]}];
+                completion(nil, error);
+            } else {
+                NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
+                                                     code:BSUIRAPIErrorUnknown 
+                                                 userInfo:@{NSLocalizedDescriptionKey: @"Unknown error occurred"}];
+                completion(nil, error);
+            }
+        });
+    });
+}
+
+- (void)logout {
+    _apiService->logout();
+}
+
+- (BOOL)isAuthenticated {
+    return _apiService->isAuthenticated();
+}
+
+#pragma mark - Data Fetching
+
+- (void)getPersonalInfoWithCompletion:(BSUIRPersonalInfoCompletion)completion {
+    if (!completion) return;
+    
+    _apiService->getPersonalInfo([completion](const BSUIR::ApiResult<BSUIR::PersonalInfo>& result) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (result.success && result.data.has_value()) {
+                const auto& info = result.data.value();
+                
+                BSUIRPersonalInfo *personalInfo = [[BSUIRPersonalInfo alloc] init];
+                personalInfo.userId = info.id;
+                personalInfo.studentNumber = [NSString stringWithUTF8String:info.studentNumber.c_str()];
+                personalInfo.firstName = [NSString stringWithUTF8String:info.firstName.c_str()];
+                personalInfo.lastName = [NSString stringWithUTF8String:info.lastName.c_str()];
+                personalInfo.middleName = [NSString stringWithUTF8String:info.middleName.c_str()];
+                personalInfo.firstNameBel = [NSString stringWithUTF8String:info.firstNameBel.c_str()];
+                personalInfo.lastNameBel = [NSString stringWithUTF8String:info.lastNameBel.c_str()];
+                personalInfo.middleNameBel = [NSString stringWithUTF8String:info.middleNameBel.c_str()];
+                personalInfo.birthDate = [NSString stringWithUTF8String:info.birthDate.c_str()];
+                personalInfo.course = info.course;
+                personalInfo.faculty = [NSString stringWithUTF8String:info.faculty.c_str()];
+                personalInfo.speciality = [NSString stringWithUTF8String:info.speciality.c_str()];
+                personalInfo.group = [NSString stringWithUTF8String:info.group.c_str()];
+                personalInfo.email = [NSString stringWithUTF8String:info.email.c_str()];
+                personalInfo.phone = [NSString stringWithUTF8String:info.phone.c_str()];
+                
+                completion(personalInfo, nil);
+            } else if (result.error.has_value()) {
+                const auto& apiError = result.error.value();
+                NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
+                                                     code:apiError.code 
+                                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithUTF8String:apiError.message.c_str()]}];
+                completion(nil, error);
+            } else {
+                NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
+                                                     code:BSUIRAPIErrorUnknown 
+                                                 userInfo:@{NSLocalizedDescriptionKey: @"Failed to get personal info"}];
+                completion(nil, error);
+            }
+        });
+    });
+}
+
+- (void)getMarkbookWithCompletion:(BSUIRMarkbookCompletion)completion {
+    if (!completion) return;
+    
+    _apiService->getMarkbook([completion](const BSUIR::ApiResult<BSUIR::Markbook>& result) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (result.success && result.data.has_value()) {
+                const auto& markbook = result.data.value();
+                
+                BSUIRMarkbook *objcMarkbook = [[BSUIRMarkbook alloc] init];
+                objcMarkbook.studentNumber = [NSString stringWithUTF8String:markbook.studentNumber.c_str()];
+                objcMarkbook.overallGPA = markbook.overallGPA;
+                
+                // Convert semesters (simplified for now)
+                NSMutableArray<BSUIRSemester*> *semesters = [[NSMutableArray alloc] init];
+                for (const auto& semester : markbook.semesters) {
+                    BSUIRSemester *objcSemester = [[BSUIRSemester alloc] init];
+                    objcSemester.number = semester.number;
+                    objcSemester.gpa = semester.gpa;
+                    
+                    NSMutableArray<BSUIRSubject*> *subjects = [[NSMutableArray alloc] init];
+                    for (const auto& subject : semester.subjects) {
+                        BSUIRSubject *objcSubject = [[BSUIRSubject alloc] init];
+                        objcSubject.name = [NSString stringWithUTF8String:subject.name.c_str()];
+                        objcSubject.hours = subject.hours;
+                        objcSubject.credits = subject.credits;
+                        objcSubject.controlForm = [NSString stringWithUTF8String:subject.controlForm.c_str()];
+                        objcSubject.grade = subject.grade.has_value() ? @(subject.grade.value()) : nil;
+                        objcSubject.retakes = subject.retakes;
+                        objcSubject.averageGrade = subject.averageGrade.has_value() ? @(subject.averageGrade.value()) : nil;
+                        objcSubject.retakeChance = subject.retakeChance;
+                        objcSubject.isOnline = subject.isOnline;
+                        
+                        [subjects addObject:objcSubject];
+                    }
+                    objcSemester.subjects = subjects;
+                    [semesters addObject:objcSemester];
+                }
+                objcMarkbook.semesters = semesters;
+                
+                completion(objcMarkbook, nil);
+            } else if (result.error.has_value()) {
+                const auto& apiError = result.error.value();
+                NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
+                                                     code:apiError.code 
+                                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithUTF8String:apiError.message.c_str()]}];
+                completion(nil, error);
+            } else {
+                NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
+                                                     code:BSUIRAPIErrorUnknown 
+                                                 userInfo:@{NSLocalizedDescriptionKey: @"Failed to get markbook"}];
+                completion(nil, error);
+            }
+        });
+    });
+}
+
+- (void)getGroupInfoWithCompletion:(BSUIRGroupInfoCompletion)completion {
+    if (!completion) return;
+    
+    _apiService->getGroupInfo([completion](const BSUIR::ApiResult<BSUIR::GroupInfo>& result) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (result.success && result.data.has_value()) {
+                const auto& groupInfo = result.data.value();
+                
+                BSUIRGroupInfo *objcGroupInfo = [[BSUIRGroupInfo alloc] init];
+                objcGroupInfo.number = [NSString stringWithUTF8String:groupInfo.number.c_str()];
+                objcGroupInfo.faculty = [NSString stringWithUTF8String:groupInfo.faculty.c_str()];
+                objcGroupInfo.course = groupInfo.course;
+                
+                BSUIRCurator *curator = [[BSUIRCurator alloc] init];
+                curator.fullName = [NSString stringWithUTF8String:groupInfo.curator.fullName.c_str()];
+                curator.phone = [NSString stringWithUTF8String:groupInfo.curator.phone.c_str()];
+                curator.email = [NSString stringWithUTF8String:groupInfo.curator.email.c_str()];
+                curator.profileUrl = [NSString stringWithUTF8String:groupInfo.curator.profileUrl.c_str()];
+                objcGroupInfo.curator = curator;
+                
+                NSMutableArray<BSUIRGroupStudent*> *students = [[NSMutableArray alloc] init];
+                for (const auto& student : groupInfo.students) {
+                    BSUIRGroupStudent *objcStudent = [[BSUIRGroupStudent alloc] init];
+                    objcStudent.number = student.number;
+                    objcStudent.fullName = [NSString stringWithUTF8String:student.fullName.c_str()];
+                    [students addObject:objcStudent];
+                }
+                objcGroupInfo.students = students;
+                
+                completion(objcGroupInfo, nil);
+            } else if (result.error.has_value()) {
+                const auto& apiError = result.error.value();
+                NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
+                                                     code:apiError.code 
+                                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithUTF8String:apiError.message.c_str()]}];
+                completion(nil, error);
+            } else {
+                NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
+                                                     code:BSUIRAPIErrorUnknown 
+                                                 userInfo:@{NSLocalizedDescriptionKey: @"Failed to get group info"}];
+                completion(nil, error);
+            }
+        });
+    });
+}
+
+#pragma mark - Token Management
+
+- (void)setAccessToken:(NSString*)accessToken refreshToken:(NSString*)refreshToken {
+    if (accessToken && refreshToken) {
+        std::string stdAccessToken = [accessToken UTF8String];
+        std::string stdRefreshToken = [refreshToken UTF8String];
+        _apiService->setTokens(stdAccessToken, stdRefreshToken);
+    }
+}
+
+- (NSString*)getAccessToken {
+    std::string token = _apiService->getAccessToken();
+    return [NSString stringWithUTF8String:token.c_str()];
+}
+
+- (NSString*)getRefreshToken {
+    std::string token = _apiService->getRefreshToken();
+    return [NSString stringWithUTF8String:token.c_str()];
+}
+
+@end
