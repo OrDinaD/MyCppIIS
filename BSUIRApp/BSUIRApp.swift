@@ -1,12 +1,7 @@
-//
-//  cPPiISApp.swift
-//  BSUIR IIS API Test App
-//
-
 import SwiftUI
 
 @main
-struct cPPiISApp: App {
+struct BSUIRApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

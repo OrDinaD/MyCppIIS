@@ -1,0 +1,38 @@
+{
+  "" : {
+    "diagnostics" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/cPPiIS-master.dia",
+    "emit-module-dependencies" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/cPPiIS-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/cPPiIS-master-emit-module.dia",
+    "swift-dependencies" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/cPPiIS-master.swiftdeps"
+  },
+  "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/GeneratedAssetSymbols~partial.swiftmodule"
+  },
+  "/Users/vlad/Documents/Developer/cPPiIS/cPPiIS/ContentView.swift" : {
+    "const-values" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/ContentView.swiftconstvalues",
+    "dependencies" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/ContentView.d",
+    "diagnostics" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/ContentView.dia",
+    "index-unit-output-path" : "/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/ContentView.o",
+    "swift-dependencies" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/ContentView.swiftdeps",
+    "swiftmodule" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/ContentView~partial.swiftmodule"
+  },
+  "/Users/vlad/Documents/Developer/cPPiIS/cPPiIS/cPPiISApp.swift" : {
+    "const-values" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/cPPiISApp.swiftconstvalues",
+    "dependencies" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/cPPiISApp.d",
+    "diagnostics" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/cPPiISApp.dia",
+    "index-unit-output-path" : "/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/cPPiISApp.o",
+    "llvm-bc" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/cPPiISApp.bc",
+    "object" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/cPPiISApp.o",
+    "swift-dependencies" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/cPPiISApp.swiftdeps",
+    "swiftmodule" : "/Users/vlad/Documents/Developer/cPPiIS/build/cPPiIS.build/Debug-iphoneos/cPPiIS.build/Objects-normal/arm64/cPPiISApp~partial.swiftmodule"
+  }
+}
