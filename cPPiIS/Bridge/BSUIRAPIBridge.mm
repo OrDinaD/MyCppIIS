@@ -39,7 +39,12 @@
                       password:(NSString*)password 
                     completion:(BSUIRLoginCompletion)completion {
     
+    NSLog(@"🚀 BSUIRAPIBridge: Starting login process");
+    NSLog(@"👤 Student Number: %@", studentNumber ?: @"(nil)");
+    NSLog(@"🔒 Password: %@", password ? @"[PROTECTED]" : @"(nil)");
+    
     if (!studentNumber || !password || !completion) {
+        NSLog(@"❌ BSUIRAPIBridge: Invalid parameters provided");
         NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
                                              code:BSUIRAPIErrorInvalidCredentials 
                                          userInfo:@{NSLocalizedDescriptionKey: @"Invalid credentials provided"}];
@@ -50,9 +55,15 @@
     std::string stdStudentNumber = [studentNumber UTF8String];
     std::string stdPassword = [password UTF8String];
     
+    NSLog(@"🔄 BSUIRAPIBridge: Calling C++ ApiService login");
+    
     _apiService->login(stdStudentNumber, stdPassword, [completion](const BSUIR::ApiResult<BSUIR::LoginResponse>& result) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            NSLog(@"🔄 BSUIRAPIBridge: Received response from C++ ApiService");
+            NSLog(@"✅ Success: %s", result.success ? "YES" : "NO");
+            
             if (result.success && result.data.has_value()) {
+                NSLog(@"🎉 BSUIRAPIBridge: Login successful, creating user object");
                 const auto& loginData = result.data.value();
                 
                 BSUIRUser *user = [[BSUIRUser alloc] init];
@@ -65,17 +76,31 @@
                 user.userId = loginData.userId;
                 user.expiresIn = loginData.expiresIn;
                 
+                NSLog(@"👤 Created user: %@ %@", user.firstName, user.lastName);
                 completion(user, nil);
             } else if (result.error.has_value()) {
+                NSLog(@"❌ BSUIRAPIBridge: Login failed with API error");
                 const auto& apiError = result.error.value();
+                NSLog(@"❌ Error code: %d", apiError.code);
+                NSLog(@"❌ Error message: %s", apiError.message.c_str());
+                NSLog(@"❌ Error details: %s", apiError.details.c_str());
+                
+                // Safely convert C++ strings to NSString, handling potential nil values
+                NSString *messageStr = [NSString stringWithUTF8String:apiError.message.c_str()];
+                NSString *detailsStr = [NSString stringWithUTF8String:apiError.details.c_str()];
+                
                 NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
                                                      code:apiError.code 
-                                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithUTF8String:apiError.message.c_str()]}];
+                                                 userInfo:@{
+                                                     NSLocalizedDescriptionKey: messageStr ?: @"API Error",
+                                                     NSLocalizedFailureReasonErrorKey: detailsStr ?: @"No details available"
+                                                 }];
                 completion(nil, error);
             } else {
+                NSLog(@"❌ BSUIRAPIBridge: Unknown error occurred");
                 NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
                                                      code:BSUIRAPIErrorUnknown 
-                                                 userInfo:@{NSLocalizedDescriptionKey: @"Unknown error occurred"}];
+                                                 userInfo:@{NSLocalizedDescriptionKey: @"Unknown error occurred during login"}];
                 completion(nil, error);
             }
         });

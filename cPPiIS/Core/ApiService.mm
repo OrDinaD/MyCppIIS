@@ -24,27 +24,44 @@ void ApiService::login(const std::string& studentNumber,
                       const std::string& password, 
                       LoginCallback callback) {
     
-    std::string requestBody = JSONParser::createLoginRequest(studentNumber, password, true);
+    NSLog(@"🔐 Starting login request for student: %s", studentNumber.c_str());
     
-    httpClient->post(API_LOGIN_ENDPOINT, requestBody, [this, callback](const HTTPResponse& response) {
+    std::string requestBody = JSONParser::createLoginRequest(studentNumber, password, true);
+    NSLog(@"📤 Login request body: %s", requestBody.c_str());
+    
+    httpClient->post(API_LOGIN_ENDPOINT, requestBody, [this, callback, studentNumber](const HTTPResponse& response) {
+        NSLog(@"🔄 Login response received for student: %s", studentNumber.c_str());
         this->handleLoginResponse(response, callback);
     });
 }
 
 void ApiService::handleLoginResponse(const HTTPResponse& response, LoginCallback callback) {
+    NSLog(@"🔍 Processing login response - Status: %d, Success: %s", 
+          response.statusCode, response.success ? "YES" : "NO");
+    
+    if (!response.success) {
+        NSLog(@"❌ Login failed - HTTP Error: %s", response.errorMessage.c_str());
+    }
+    
     if (response.statusCode == 200) {
+        NSLog(@"✅ Login HTTP 200 - Parsing response data");
         auto loginData = JSONParser::parseLoginResponse(response.data);
         if (loginData.has_value()) {
+            NSLog(@"🎉 Login successful! Access token received");
             currentAccessToken = loginData->accessToken;
             currentRefreshToken = loginData->refreshToken;
             httpClient->setDefaultHeader("Authorization", "Bearer " + currentAccessToken);
             callback(ApiResult<LoginResponse>(std::move(loginData.value())));
         } else {
+            NSLog(@"💥 Failed to parse login response JSON");
             ApiError error = JSONParser::parseError(response.data, response.statusCode);
+            NSLog(@"🔴 Parsed error: Code=%d, Message=%s", error.code, error.message.c_str());
             callback(ApiResult<LoginResponse>(error));
         }
     } else {
+        NSLog(@"🔴 Login failed with HTTP status: %d", response.statusCode);
         ApiError error = JSONParser::parseError(response.data, response.statusCode);
+        NSLog(@"🔴 Error details: Code=%d, Message=%s", error.code, error.message.c_str());
         callback(ApiResult<LoginResponse>(error));
     }
 }

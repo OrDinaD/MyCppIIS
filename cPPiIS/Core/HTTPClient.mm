@@ -22,19 +22,28 @@ struct CallbackWrapper {
 void httpCallbackAdapter(const char* data, int statusCode, const char* error, void* context) {
     CallbackWrapper* wrapper = static_cast<CallbackWrapper*>(context);
     
-    // Add debug logging
-    NSLog(@"📱 HTTPClient Response:");
-    NSLog(@"📱 Status Code: %d", statusCode);
-    NSLog(@"📱 Error: %s", error ? error : "None");
-    NSLog(@"📱 Data: %s", data ? data : "Empty");
+    // Enhanced debug logging
+    NSLog(@"🌐 HTTPClient Response Details:");
+    NSLog(@"� Status Code: %d", statusCode);
+    NSLog(@"❌ Error: %s", error ? error : "None");
+    NSLog(@"� Response Data Length: %lu bytes", data ? strlen(data) : 0);
+    
+    // Log first 500 characters of response for debugging
+    if (data && strlen(data) > 0) {
+        NSString *responseString = [NSString stringWithUTF8String:data];
+        NSString *truncatedResponse = responseString.length > 500 ? 
+            [responseString substringToIndex:500] : responseString;
+        NSLog(@"📄 Response Data (truncated): %@", truncatedResponse);
+    }
     
     if (wrapper && wrapper->userCallback) {
         HTTPResponse response;
         
-        if (error) {
+        if (error && strlen(error) > 0) {
             response.success = false;
             response.errorMessage = error;
-            response.statusCode = 0;
+            response.statusCode = statusCode;
+            NSLog(@"💥 Request failed with error: %s", error);
         } else {
             response.success = (statusCode >= 200 && statusCode < 300);
             response.statusCode = statusCode;
@@ -42,6 +51,9 @@ void httpCallbackAdapter(const char* data, int statusCode, const char* error, vo
             
             if (!response.success) {
                 response.errorMessage = "HTTP Error " + std::to_string(statusCode);
+                NSLog(@"🔴 HTTP Error %d: Request unsuccessful", statusCode);
+            } else {
+                NSLog(@"✅ Request successful with status %d", statusCode);
             }
         }
         

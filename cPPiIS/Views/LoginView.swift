@@ -161,31 +161,72 @@ struct LoginView: View {
     // MARK: - Methods
     
     private func performLogin() {
-        guard isFormValid else { return }
+        guard isFormValid else { 
+            print("🚫 LoginView: Form validation failed")
+            return 
+        }
+        
+        print("🚀 LoginView: Starting login process")
+        print("👤 Student Number: \(studentNumber)")
+        print("🔒 Password: [PROTECTED]")
         
         isLoading = true
         
         let trimmedStudentNumber = studentNumber.trimmingCharacters(in: .whitespacesAndNewlines)
         
-        BSUIRAPIBridge.shared().login(
+        BSUIRAPIBridge.shared()?.login(
             withStudentNumber: trimmedStudentNumber,
             password: password
-        ) { [self] user, error in
-            DispatchQueue.main.async {
+        ) { (user: AnyObject?, error: Error?) in
+            let workItem = DispatchWorkItem {
+                print("🔄 LoginView: Received login response")
                 isLoading = false
                 
                 if let error = error {
-                    errorMessage = error.localizedDescription
+                    print("❌ LoginView: Login failed with error")
+                    print("❌ Error description: \(error.localizedDescription)")
+                    
+                    // Cast to NSError to access domain and code
+                    let nsError = error as NSError
+                    print("❌ Error domain: \(nsError.domain)")
+                    print("❌ Error code: \(nsError.code)")
+                    
+                    if let failureReason = nsError.localizedFailureReason {
+                        print("❌ Failure reason: \(failureReason)")
+                    }
+                    
+                    // Create detailed error message for user
+                    var detailedError = error.localizedDescription
+                    if nsError.code == 401 {
+                        detailedError = "Неверный номер студенческого билета или пароль"
+                    } else if nsError.code == 400 {
+                        detailedError = "Неверный формат данных. Проверьте правильность ввода"
+                    } else if nsError.code >= 500 {
+                        detailedError = "Сервер временно недоступен. Попробуйте позже"
+                    } else if nsError.code == -1009 {
+                        detailedError = "Нет подключения к интернету"
+                    }
+                    
+                    errorMessage = detailedError
                     showingError = true
-                } else if user != nil {
+                } else if let user = user {
+                    print("🎉 LoginView: Login successful!")
+                    print("👤 User data received")
+                    
                     // Save credentials if remember me is enabled
                     if rememberCredentials {
+                        print("💾 LoginView: Saving credentials to keychain")
                         saveCredentialsToKeychain(studentNumber: trimmedStudentNumber, password: password)
                     }
                     
                     isAuthenticated = true
+                } else {
+                    print("❌ LoginView: Unexpected state - no user and no error")
+                    errorMessage = "Неизвестная ошибка. Попробуйте еще раз"
+                    showingError = true
                 }
             }
+            DispatchQueue.main.async(execute: workItem)
         }
     }
     

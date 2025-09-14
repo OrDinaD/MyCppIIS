@@ -204,12 +204,45 @@ std::optional<GroupInfo> JSONParser::parseGroupInfo(const std::string& json) {
 }
 
 ApiError JSONParser::parseError(const std::string& json, int httpCode) {
+    std::cout << "🚨 JSONParser: Parsing error response" << std::endl;
+    std::cout << "🚨 HTTP Code: " << httpCode << std::endl;
+    std::cout << "🚨 Raw response: " << json << std::endl;
+    
     auto obj = parseObject(json);
     
     ApiError error;
     error.code = httpCode;
-    error.message = obj.count("message") ? obj["message"] : "Unknown error";
+    
+    if (obj.count("message")) {
+        error.message = obj["message"];
+        std::cout << "📄 Found error message: " << error.message << std::endl;
+    } else if (obj.count("error")) {
+        error.message = obj["error"];
+        std::cout << "📄 Found error field: " << error.message << std::endl;
+    } else if (obj.count("error_description")) {
+        error.message = obj["error_description"];
+        std::cout << "📄 Found error_description: " << error.message << std::endl;
+    } else {
+        // Try to extract any useful information from the response
+        if (httpCode == 400) {
+            error.message = "Bad Request - Check credentials format";
+        } else if (httpCode == 401) {
+            error.message = "Unauthorized - Invalid credentials";
+        } else if (httpCode == 403) {
+            error.message = "Forbidden - Access denied";
+        } else if (httpCode == 404) {
+            error.message = "Not Found - API endpoint not available";
+        } else if (httpCode == 500) {
+            error.message = "Internal Server Error - Service temporarily unavailable";
+        } else {
+            error.message = "HTTP " + std::to_string(httpCode) + " error occurred";
+        }
+        std::cout << "📄 Using default error message: " << error.message << std::endl;
+    }
+    
     error.details = obj.count("details") ? obj["details"] : json;
+    
+    std::cout << "🚨 Final error: Code=" << error.code << ", Message=" << error.message << std::endl;
     
     return error;
 }
