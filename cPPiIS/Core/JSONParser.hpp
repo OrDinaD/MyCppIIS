@@ -1,8 +1,8 @@
 //
 //  JSONParser.hpp
-//  BSUIRApp Core C++ JSON Parser
+//  cPPiIS Core C++ JSON Parser
 //
-//  Simple JSON parser for API responses
+//  Simple JSON parser for API responses - C++ OOP coursework
 //
 
 #ifndef JSONParser_hpp

@@ -1,6 +1,8 @@
 //
-//  HTTPClient.cpp
-//  BSUIRApp Core C++ HTTP Client Implementation
+//  HTTPClient.mm
+//  cPPiIS Core C++ HTTP Client Implementation
+//
+//  Objective-C++ implementation using Foundation networking - C++ OOP coursework
 //
 
 #include "HTTPClient.hpp"
@@ -19,6 +21,12 @@ struct CallbackWrapper {
 // C callback adapter
 void httpCallbackAdapter(const char* data, int statusCode, const char* error, void* context) {
     CallbackWrapper* wrapper = static_cast<CallbackWrapper*>(context);
+    
+    // Add debug logging
+    NSLog(@"📱 HTTPClient Response:");
+    NSLog(@"📱 Status Code: %d", statusCode);
+    NSLog(@"📱 Error: %s", error ? error : "None");
+    NSLog(@"📱 Data: %s", data ? data : "Empty");
     
     if (wrapper && wrapper->userCallback) {
         HTTPResponse response;
@@ -160,6 +168,13 @@ void BSUIR::HTTPClient::performRequest(HTTPMethodType method,
     
     std::string fullUrl = buildFullUrl(endpoint);
     std::string headersString = buildHeadersString(additionalHeaders);
+    
+    // Add debug logging
+    NSLog(@"🌐 HTTPClient Request:");
+    NSLog(@"🌐 Method: %ld", (long)method);
+    NSLog(@"🌐 URL: %s", fullUrl.c_str());
+    NSLog(@"🌐 Headers: %s", headersString.c_str());
+    NSLog(@"🌐 Body: %s", body.c_str());
     
     // Create callback wrapper
     CallbackWrapper* wrapper = new CallbackWrapper{callback, this};

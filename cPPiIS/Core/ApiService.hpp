@@ -1,5 +1,9 @@
 //
 //  ApiService.hpp
+//  cPPiIS Core C++ API Service
+//
+//  Main API service class for BSUIR IIS integration - C++ OOP coursework
+// ApiService.hpp
 //  BSUIRApp Core C++ API Service
 //
 //  Main service class for BSUIR IIS API interactions

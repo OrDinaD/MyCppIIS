@@ -6,6 +6,7 @@
 #include "JSONParser.hpp"
 #include <algorithm>
 #include <regex>
+#include <iostream>
 
 namespace BSUIR {
 
@@ -92,8 +93,19 @@ std::optional<double> JSONParser::parseOptionalDouble(const std::string& value) 
 }
 
 std::optional<LoginResponse> JSONParser::parseLoginResponse(const std::string& json) {
+    std::cout << "🔍 JSONParser: Parsing login response:" << std::endl;
+    std::cout << "🔍 Raw JSON: " << json << std::endl;
+    
     auto obj = parseObject(json);
-    if (obj.empty()) return std::nullopt;
+    if (obj.empty()) {
+        std::cout << "❌ JSONParser: Failed to parse JSON object" << std::endl;
+        return std::nullopt;
+    }
+    
+    std::cout << "🔍 Parsed object keys:" << std::endl;
+    for (const auto& pair : obj) {
+        std::cout << "🔍 Key: " << pair.first << ", Value: " << pair.second << std::endl;
+    }
     
     LoginResponse response;
     
@@ -110,8 +122,13 @@ std::optional<LoginResponse> JSONParser::parseLoginResponse(const std::string& j
         response.lastName = obj["lastName"];
         response.middleName = obj["middleName"];
         
+        std::cout << "✅ JSONParser: Successfully parsed login response" << std::endl;
         return response;
+    } catch (const std::exception& e) {
+        std::cout << "❌ JSONParser: Exception parsing login response: " << e.what() << std::endl;
+        return std::nullopt;
     } catch (...) {
+        std::cout << "❌ JSONParser: Unknown error parsing login response" << std::endl;
         return std::nullopt;
     }
 }
@@ -200,13 +217,19 @@ ApiError JSONParser::parseError(const std::string& json, int httpCode) {
 std::string JSONParser::createLoginRequest(const std::string& login, 
                                          const std::string& password, 
                                          bool rememberMe) {
+    // Format 2: Standard BSUIR IIS API login request format
     std::ostringstream oss;
     oss << "{"
         << "\"login\":\"" << login << "\","
         << "\"password\":\"" << password << "\","
         << "\"rememberMe\":" << (rememberMe ? "true" : "false")
         << "}";
-    return oss.str();
+    
+    std::string requestBody = oss.str();
+    std::cout << "🔑 JSONParser: Creating Format 2 login request:" << std::endl;
+    std::cout << "🔑 Request body: " << requestBody << std::endl;
+    
+    return requestBody;
 }
 
 } // namespace BSUIR

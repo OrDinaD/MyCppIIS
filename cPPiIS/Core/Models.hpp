@@ -1,8 +1,8 @@
 //
 //  Models.hpp
-//  BSUIRApp Core C++ Models
+//  cPPiIS Core C++ Models
 //
-//  Data models for BSUIR IIS API responses
+//  Core data models and structures for C++ OOP coursework
 //
 
 #ifndef Models_hpp

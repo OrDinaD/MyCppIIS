@@ -134,6 +134,17 @@ struct LoginView: View {
         } message: {
             Text(errorMessage)
         }
+        .onAppear {
+            // Автоматически заполняем тестовые данные и выполняем вход для демо
+            #if DEBUG
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                fillTestCredentials()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    performLogin()
+                }
+            }
+            #endif
+        }
     }
     
     // MARK: - Computed Properties

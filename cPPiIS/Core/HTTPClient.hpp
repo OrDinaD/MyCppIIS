@@ -1,8 +1,8 @@
 //
 //  HTTPClient.hpp
-//  BSUIRApp Core C++ HTTP Client
+//  cPPiIS Core C++ HTTP Client
 //
-//  HTTP client for API requests using Foundation networking
+//  HTTP client for API requests using Foundation networking - C++ OOP coursework
 //
 
 #ifndef HTTPClient_hpp
