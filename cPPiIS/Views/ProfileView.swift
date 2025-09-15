@@ -5,6 +5,10 @@ struct ProfileView: View {
     @Binding var isLoading: Bool
     
     @State private var showingFullProfile = false
+    @State private var errorMessage: String = ""
+    @State private var retryCount: Int = 0
+    
+    private let maxRetries = 3
     
     var body: some View {
         NavigationView {
@@ -51,16 +55,30 @@ struct ProfileView: View {
             
             Text("Не удалось загрузить профиль")
                 .font(.headline)
+                .multilineTextAlignment(.center)
             
-            Text("Проверьте подключение к интернету и попробуйте снова")
+            Text(errorMessage.isEmpty ? "Проверьте подключение к интернету и попробуйте снова" : errorMessage)
                 .font(.subheadline)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
             
-            Button("Попробовать снова") {
-                refreshProfile()
+            if retryCount < maxRetries {
+                Button("Попробовать снова") {
+                    retryLoadProfile()
+                }
+                .buttonStyle(.borderedProminent)
+            } else {
+                VStack(spacing: 12) {
+                    Text("Превышено количество попыток")
+                        .font(.caption)
+                        .foregroundColor(.red)
+                    
+                    Button("Сбросить и попробовать") {
+                        resetAndRetry()
+                    }
+                    .buttonStyle(.bordered)
+                }
             }
-            .buttonStyle(.borderedProminent)
         }
         .padding()
     }
@@ -176,7 +194,7 @@ struct ProfileView: View {
                 }
                 
                 if !info.firstNameBel.isEmpty || !info.lastNameBel.isEmpty {
-                    let fullNameBel = "\(info.lastNameBel) \(info.firstNameBel) \(info.middleNameBel)".trimmingCharacters(in: .whitespaces)
+                    let fullNameBel = "\(info.lastNameBel ?? "") \(info.firstNameBel ?? "") \(info.middleNameBel ?? "")".trimmingCharacters(in: .whitespaces)
                     if !fullNameBel.isEmpty {
                         infoRow("ФИО (бел.)", value: fullNameBel, icon: "person")
                     }
@@ -289,15 +307,67 @@ struct ProfileView: View {
     }
     
     private func refreshProfile() {
+        loadProfile()
+    }
+    
+    private func loadProfile() {
+        guard !isLoading else { return }
+        
         isLoading = true
+        errorMessage = ""
         
         BSUIRAPIBridge.shared().getPersonalInfo { info, error in
             DispatchQueue.main.async {
-                isLoading = false
+                self.isLoading = false
+                
                 if let info = info {
-                    personalInfo = info
+                    self.personalInfo = info
+                    self.retryCount = 0 // Reset retry count on success
+                    self.errorMessage = ""
+                } else {
+                    // Reset personalInfo on error to show error view properly
+                    self.personalInfo = nil
+                    
+                    if let error = error {
+                        self.errorMessage = self.getHumanReadableError(error)
+                        NSLog("❌ ProfileView: Failed to load profile - %@", error.localizedDescription)
+                    } else {
+                        self.errorMessage = "Неизвестная ошибка при загрузке профиля"
+                    }
                 }
             }
+        }
+    }
+    
+    private func retryLoadProfile() {
+        retryCount += 1
+        loadProfile()
+    }
+    
+    private func resetAndRetry() {
+        retryCount = 0
+        errorMessage = ""
+        loadProfile()
+    }
+    
+    private func getHumanReadableError(_ error: Error) -> String {
+        let nsError = error as NSError
+        
+        switch nsError.code {
+        case NSURLErrorNotConnectedToInternet:
+            return "Отсутствует подключение к интернету"
+        case NSURLErrorTimedOut:
+            return "Превышено время ожидания ответа"
+        case 401:
+            return "Необходимо войти в систему заново"
+        case 403:
+            return "Доступ к профилю запрещен"
+        case 404:
+            return "Профиль не найден"
+        case 500...599:
+            return "Ошибка сервера. Попробуйте позже"
+        default:
+            return nsError.localizedDescription
         }
     }
     

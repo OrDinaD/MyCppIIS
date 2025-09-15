@@ -139,36 +139,47 @@
 - (void)getPersonalInfoWithCompletion:(BSUIRPersonalInfoCompletion)completion {
     if (!completion) return;
     
+    NSLog(@"🔍 BSUIRAPIBridge: Starting getPersonalInfo request");
+    
     _apiService->getPersonalInfo([completion](const BSUIR::ApiResult<BSUIR::PersonalInfo>& result) {
         dispatch_async(dispatch_get_main_queue(), ^{
+            NSLog(@"📥 BSUIRAPIBridge: Received PersonalInfo response, success: %s", result.success ? "YES" : "NO");
+            
             if (result.success && result.data.has_value()) {
                 const auto& info = result.data.value();
                 
                 BSUIRPersonalInfo *personalInfo = [[BSUIRPersonalInfo alloc] init];
-                personalInfo.userId = info.id;
-                personalInfo.studentNumber = [NSString stringWithUTF8String:info.studentNumber.c_str()];
-                personalInfo.firstName = [NSString stringWithUTF8String:info.firstName.c_str()];
-                personalInfo.lastName = [NSString stringWithUTF8String:info.lastName.c_str()];
-                personalInfo.middleName = [NSString stringWithUTF8String:info.middleName.c_str()];
-                personalInfo.firstNameBel = [NSString stringWithUTF8String:info.firstNameBel.c_str()];
-                personalInfo.lastNameBel = [NSString stringWithUTF8String:info.lastNameBel.c_str()];
-                personalInfo.middleNameBel = [NSString stringWithUTF8String:info.middleNameBel.c_str()];
-                personalInfo.birthDate = [NSString stringWithUTF8String:info.birthDate.c_str()];
-                personalInfo.course = info.course;
-                personalInfo.faculty = [NSString stringWithUTF8String:info.faculty.c_str()];
-                personalInfo.speciality = [NSString stringWithUTF8String:info.speciality.c_str()];
-                personalInfo.group = [NSString stringWithUTF8String:info.group.c_str()];
-                personalInfo.email = [NSString stringWithUTF8String:info.email.c_str()];
-                personalInfo.phone = [NSString stringWithUTF8String:info.phone.c_str()];
                 
+                // Safe string conversion with null checks
+                personalInfo.userId = info.id;
+                personalInfo.studentNumber = info.studentNumber.empty() ? @"" : [NSString stringWithUTF8String:info.studentNumber.c_str()];
+                personalInfo.firstName = info.firstName.empty() ? @"" : [NSString stringWithUTF8String:info.firstName.c_str()];
+                personalInfo.lastName = info.lastName.empty() ? @"" : [NSString stringWithUTF8String:info.lastName.c_str()];
+                personalInfo.middleName = info.middleName.empty() ? @"" : [NSString stringWithUTF8String:info.middleName.c_str()];
+                personalInfo.firstNameBel = info.firstNameBel.empty() ? @"" : [NSString stringWithUTF8String:info.firstNameBel.c_str()];
+                personalInfo.lastNameBel = info.lastNameBel.empty() ? @"" : [NSString stringWithUTF8String:info.lastNameBel.c_str()];
+                personalInfo.middleNameBel = info.middleNameBel.empty() ? @"" : [NSString stringWithUTF8String:info.middleNameBel.c_str()];
+                personalInfo.birthDate = info.birthDate.empty() ? @"" : [NSString stringWithUTF8String:info.birthDate.c_str()];
+                personalInfo.course = info.course;
+                personalInfo.faculty = info.faculty.empty() ? @"" : [NSString stringWithUTF8String:info.faculty.c_str()];
+                personalInfo.speciality = info.speciality.empty() ? @"" : [NSString stringWithUTF8String:info.speciality.c_str()];
+                personalInfo.group = info.group.empty() ? @"" : [NSString stringWithUTF8String:info.group.c_str()];
+                personalInfo.email = info.email.empty() ? @"" : [NSString stringWithUTF8String:info.email.c_str()];
+                personalInfo.phone = info.phone.empty() ? @"" : [NSString stringWithUTF8String:info.phone.c_str()];
+                
+                NSLog(@"✅ BSUIRAPIBridge: PersonalInfo object created for %@ %@", personalInfo.firstName, personalInfo.lastName);
                 completion(personalInfo, nil);
             } else if (result.error.has_value()) {
                 const auto& apiError = result.error.value();
+                NSLog(@"❌ BSUIRAPIBridge: PersonalInfo error - Code: %d, Message: %s", apiError.code, apiError.message.c_str());
+                
+                NSString *messageStr = apiError.message.empty() ? @"Failed to get personal info" : [NSString stringWithUTF8String:apiError.message.c_str()];
                 NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
                                                      code:apiError.code 
-                                                 userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithUTF8String:apiError.message.c_str()]}];
+                                                 userInfo:@{NSLocalizedDescriptionKey: messageStr}];
                 completion(nil, error);
             } else {
+                NSLog(@"❌ BSUIRAPIBridge: Unknown error getting PersonalInfo");
                 NSError *error = [NSError errorWithDomain:@"BSUIRAPIError" 
                                                      code:BSUIRAPIErrorUnknown 
                                                  userInfo:@{NSLocalizedDescriptionKey: @"Failed to get personal info"}];

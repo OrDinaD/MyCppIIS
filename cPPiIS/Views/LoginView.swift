@@ -5,6 +5,8 @@ struct LoginView: View {
     @Binding var isAuthenticated: Bool
     @Binding var isLoading: Bool
     
+    @StateObject private var credentialsManager = CredentialsManager()
+    
     @State private var studentNumber: String = ""
     @State private var password: String = ""
     @State private var showingError = false
@@ -52,6 +54,7 @@ struct LoginView: View {
                                         .keyboardType(.numberPad)
                                         .autocapitalization(.none)
                                         .disableAutocorrection(true)
+                                        .textContentType(.username) // Enable autofill for username
                                 }
                                 
                                 // Password Field
@@ -62,6 +65,7 @@ struct LoginView: View {
                                     
                                     SecureField("Введите пароль", text: $password)
                                         .textFieldStyle(RoundedBorderTextFieldStyle())
+                                        .textContentType(.password) // Enable autofill for password
                                 }
                                 
                                 // Remember Me Toggle
@@ -96,8 +100,12 @@ struct LoginView: View {
                             .disabled(isLoading || !isFormValid)
                             
                             // Biometric Login (if available)
-                            BiometricLoginButton {
-                                authenticateWithBiometrics()
+                            if credentialsManager.biometricAuthAvailable && credentialsManager.hasStoredCredentials {
+                                BiometricLoginButton(credentialsManager: credentialsManager) {
+                                    Task {
+                                        await authenticateWithBiometrics()
+                                    }
+                                }
                             }
                             
                             // Test Credentials Button (Development only)
@@ -134,8 +142,8 @@ struct LoginView: View {
         } message: {
             Text(errorMessage)
         }
-                .onAppear {
-            // setupBridgeLogging()
+        .onAppear {
+            loadSavedCredentials()
         }
     }
     
@@ -205,30 +213,27 @@ struct LoginView: View {
                     var detailedError = error.localizedDescription
                     
                     // Check if we have more specific error information
-                    if let userInfo = nsError.userInfo as? [String: Any] {
-                        print("🔍 UserInfo keys: \(userInfo.keys)")
-                        print("🔍 Full UserInfo: \(userInfo)")
-                        
-                        // Try to get the actual server response details
-                        if let failureReason = userInfo[NSLocalizedFailureReasonErrorKey] as? String {
-                            print("📋 Server response details: \(failureReason)")
-                            if failureReason != "No details available" && !failureReason.isEmpty {
-                                detailedError = "Ошибка сервера: \(failureReason)"
-                            }
-                        }
-                        
-                        // Also check for other error details
-                        if let description = userInfo[NSLocalizedDescriptionKey] as? String {
-                            print("📝 Error description: \(description)")
-                        }
-                        
-                        // Try to get more detailed error info
-                        for (key, value) in userInfo {
-                            print("🔑 UserInfo[\(key)]: \(value)")
+                    let userInfo = nsError.userInfo
+                    print("🔍 UserInfo keys: \(userInfo.keys)")
+                    print("🔍 Full UserInfo: \(userInfo)")
+                    
+                    // Try to get the actual server response details
+                    if let failureReason = userInfo[NSLocalizedFailureReasonErrorKey] as? String {
+                        print("📋 Server response details: \(failureReason)")
+                        if failureReason != "No details available" && !failureReason.isEmpty {
+                            detailedError = "Ошибка сервера: \(failureReason)"
                         }
                     }
                     
-                    // Only use generic messages if no specific server info available
+                    // Also check for other error details
+                    if let description = userInfo[NSLocalizedDescriptionKey] as? String {
+                        print("📝 Error description: \(description)")
+                    }
+                    
+                    // Try to get more detailed error info
+                    for (key, value) in userInfo {
+                        print("🔑 UserInfo[\(key)]: \(value)")
+                    }                    // Only use generic messages if no specific server info available
                     if detailedError == error.localizedDescription {
                         print("🚨 Using fallback error messages for code: \(nsError.code)")
                         if nsError.code == 401 {
@@ -247,14 +252,26 @@ struct LoginView: View {
                     print("🚨 Final error message to show: \(detailedError)")
                     errorMessage = detailedError
                     showingError = true
-                } else if let user = user {
+                } else if let _ = user {
                     print("🎉 LoginView: Login successful!")
                     print("👤 User data received")
                     
                     // Save credentials if remember me is enabled
                     if rememberCredentials {
-                        print("💾 LoginView: Saving credentials to keychain")
-                        saveCredentialsToKeychain(studentNumber: trimmedStudentNumber, password: password)
+                        print("💾 LoginView: Saving credentials to secure storage")
+                        Task {
+                            do {
+                                try await MainActor.run {
+                                    try credentialsManager.saveCredentials(
+                                        studentNumber: trimmedStudentNumber,
+                                        password: password,
+                                        rememberCredentials: rememberCredentials
+                                    )
+                                }
+                            } catch {
+                                print("❌ Failed to save credentials: \(error.localizedDescription)")
+                            }
+                        }
                     }
                     
                     isAuthenticated = true
@@ -273,72 +290,39 @@ struct LoginView: View {
         password = "YOUR_PASSWORD"
     }
     
-    private func authenticateWithBiometrics() {
-        let context = LAContext()
-        var error: NSError?
+    private func authenticateWithBiometrics() async {
+        let success = await credentialsManager.authenticateWithBiometrics()
         
-        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            let reason = "Используйте биометрию для быстрого входа в приложение"
-            
-            context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: reason) { success, authenticationError in
-                DispatchQueue.main.async {
-                    if success {
-                        // Load saved credentials and auto-login
-                        loadCredentialsFromKeychain()
-                    } else {
-                        if let authError = authenticationError {
-                            print("❌ Biometric authentication failed: \(authError.localizedDescription)")
-                        }
-                    }
-                }
+        if success {
+            if let credentials = credentialsManager.loadCredentials() {
+                studentNumber = credentials.studentNumber
+                password = credentials.password
+                rememberCredentials = true
+                
+                // Auto-login after biometric authentication
+                performLogin()
             }
-        } else {
-            print("❌ Biometrics not available on this device")
         }
     }
     
-    private func saveCredentialsToKeychain(studentNumber: String, password: String) {
-        // Basic keychain implementation
-        let studentNumberData = studentNumber.data(using: .utf8)!
-        let passwordData = password.data(using: .utf8)!
-        
-        let studentNumberQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: "BSUIRApp",
-            kSecAttrAccount as String: "studentNumber",
-            kSecValueData as String: studentNumberData
-        ]
-        
-        let passwordQuery: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: "BSUIRApp",
-            kSecAttrAccount as String: "password",
-            kSecValueData as String: passwordData
-        ]
-        
-        SecItemDelete(studentNumberQuery as CFDictionary)
-        SecItemDelete(passwordQuery as CFDictionary)
-        
-        SecItemAdd(studentNumberQuery as CFDictionary, nil)
-        SecItemAdd(passwordQuery as CFDictionary, nil)
-    }
-    
-    private func loadCredentialsFromKeychain() {
-        // Load and auto-fill credentials, then auto-login
-        // This is a simplified implementation
-        fillTestCredentials()
-        performLogin()
+    private func loadSavedCredentials() {
+        // Load saved credentials on view appear
+        if let credentials = credentialsManager.loadCredentials() {
+            studentNumber = credentials.studentNumber
+            password = credentials.password
+            rememberCredentials = true
+        }
     }
 }
 
 // MARK: - Biometric Login Button
 
 struct BiometricLoginButton: View {
+    let credentialsManager: CredentialsManager
     let action: () -> Void
-    @State private var biometryType: LABiometryType = .none
     
     var body: some View {
-        if biometryType != .none {
+        if credentialsManager.biometricAuthAvailable {
             Button(action: action) {
                 HStack {
                     Image(systemName: biometricIcon)
@@ -347,40 +331,32 @@ struct BiometricLoginButton: View {
                 .font(.subheadline)
                 .foregroundColor(.blue)
             }
-            .onAppear {
-                checkBiometryType()
-            }
         }
     }
     
     private var biometricIcon: String {
-        switch biometryType {
+        switch credentialsManager.biometricType {
         case .faceID:
             return "faceid"
         case .touchID:
             return "touchid"
+        case .opticID:
+            return "opticid"
         default:
             return "person.badge.key"
         }
     }
     
     private var biometricText: String {
-        switch biometryType {
+        switch credentialsManager.biometricType {
         case .faceID:
             return "Face ID"
         case .touchID:
             return "Touch ID"
+        case .opticID:
+            return "Optic ID"
         default:
             return "биометрией"
-        }
-    }
-    
-    private func checkBiometryType() {
-        let context = LAContext()
-        var error: NSError?
-        
-        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
-            biometryType = context.biometryType
         }
     }
 }

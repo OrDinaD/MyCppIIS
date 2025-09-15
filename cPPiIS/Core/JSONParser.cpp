@@ -157,30 +157,45 @@ std::optional<LoginResponse> JSONParser::parseLoginResponse(const std::string& j
 }
 
 std::optional<PersonalInfo> JSONParser::parsePersonalInfo(const std::string& json) {
+    std::cout << "🔍 JSONParser: Parsing PersonalInfo response:" << std::endl;
+    std::cout << "🔍 Raw JSON: " << json << std::endl;
+    
     auto obj = parseObject(json);
-    if (obj.empty()) return std::nullopt;
+    if (obj.empty()) {
+        std::cout << "❌ JSONParser: Failed to parse PersonalInfo JSON object" << std::endl;
+        return std::nullopt;
+    }
     
     PersonalInfo info;
     
     try {
-        info.id = std::stoi(obj["id"]);
-        info.studentNumber = obj["studentNumber"];
-        info.firstName = obj["firstName"];
-        info.lastName = obj["lastName"];
-        info.middleName = obj["middleName"];
-        info.firstNameBel = obj["firstNameBel"];
-        info.lastNameBel = obj["lastNameBel"];
-        info.middleNameBel = obj["middleNameBel"];
-        info.birthDate = obj["birthDate"];
-        info.course = std::stoi(obj["course"]);
-        info.faculty = obj["faculty"];
-        info.speciality = obj["speciality"];
-        info.group = obj["group"];
-        info.email = obj["email"];
-        info.phone = obj["phone"];
+        // Safe parsing with default values
+        info.id = obj.count("id") ? std::stoi(obj["id"]) : 0;
+        info.studentNumber = obj.count("studentNumber") ? obj["studentNumber"] : "";
+        info.firstName = obj.count("firstName") ? obj["firstName"] : "";
+        info.lastName = obj.count("lastName") ? obj["lastName"] : "";
+        info.middleName = obj.count("middleName") ? obj["middleName"] : "";
+        info.firstNameBel = obj.count("firstNameBel") ? obj["firstNameBel"] : "";
+        info.lastNameBel = obj.count("lastNameBel") ? obj["lastNameBel"] : "";
+        info.middleNameBel = obj.count("middleNameBel") ? obj["middleNameBel"] : "";
+        info.birthDate = obj.count("birthDate") ? obj["birthDate"] : "";
+        info.course = obj.count("course") ? std::stoi(obj["course"]) : 0;
+        info.faculty = obj.count("faculty") ? obj["faculty"] : "";
+        info.speciality = obj.count("speciality") ? obj["speciality"] : "";
+        info.group = obj.count("group") ? obj["group"] : "";
+        info.email = obj.count("email") ? obj["email"] : "";
+        info.phone = obj.count("phone") ? obj["phone"] : "";
+        
+        std::cout << "✅ JSONParser: Successfully parsed PersonalInfo" << std::endl;
+        std::cout << "👤 Name: " << info.firstName << " " << info.lastName << std::endl;
+        std::cout << "🎫 Student: " << info.studentNumber << ", Group: " << info.group << std::endl;
         
         return info;
+    } catch (const std::exception& e) {
+        std::cout << "❌ JSONParser: Exception parsing PersonalInfo: " << e.what() << std::endl;
+        return std::nullopt;
     } catch (...) {
+        std::cout << "❌ JSONParser: Unknown error parsing PersonalInfo" << std::endl;
         return std::nullopt;
     }
 }
