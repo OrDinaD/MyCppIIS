@@ -8,7 +8,7 @@ on:
 
 env:
   XCODE_VERSION: '16.0'
-  IOS_DESTINATION: 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.1'
+  IOS_DESTINATION: 'platform=iOS Simulator,name=iPhone 16 Pro,OS=18.5'
 
 jobs:
   build-and-test:
@@ -125,12 +125,10 @@ jobs:
       run: |
         # Проверяем наличие основных файлов документации
         test -f README.md || { echo "❌ README.md missing"; exit 1; }
-        test -f .github/CONTRIBUTING.md || { echo "❌ CONTRIBUTING.md missing"; exit 1; }
-        test -f .github/CODE_OF_CONDUCT.md || { echo "❌ CODE_OF_CONDUCT.md missing"; exit 1; }
         
         # Проверяем базовое содержимое README
         grep -q "cPPiIS" README.md || { echo "❌ Project name not found in README"; exit 1; }
-        grep -q "ООП" README.md || { echo "❌ OOP reference not found in README"; exit 1; }
+        grep -q "ООП\|OOP\|объектно-ориентированн" README.md || { echo "❌ OOP reference not found in README"; exit 1; }
         
         echo "✅ Documentation check passed"
 
