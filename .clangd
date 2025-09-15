@@ -1,0 +1,12 @@
+CompileFlags:
+  Add:
+    - -std=c++17
+    - -I/Users/vlad/Documents/Developer/cPPiIS/cPPiIS/Core
+    - -I/Users/vlad/Documents/Developer/cPPiIS/cPPiIS/Bridge
+    - -DDEBUG=1
+  Remove:
+    - -W*
+
+Diagnostics:
+  UnusedIncludes: None
+  MissingIncludes: None

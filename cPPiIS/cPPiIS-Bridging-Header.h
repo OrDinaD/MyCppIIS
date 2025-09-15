@@ -11,5 +11,6 @@
 // Import Objective-C headers that you want to expose to Swift
 #import "Bridge/BSUIRAPIBridge.h"
 #import "Bridge/BSUIRModels.h"
+#import "Bridge/BSUIRLogBridge.h"
 
 #endif /* cPPiIS_Bridging_Header_h */

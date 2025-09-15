@@ -4,6 +4,17 @@
         "array": "cpp",
         "string": "cpp",
         "string_view": "cpp",
-        "vector": "cpp"
-    }
+        "vector": "cpp",
+        "*-Bridging-Header.h": "objective-c"
+    },
+    "C_Cpp.default.cppStandard": "c++17",
+    "C_Cpp.default.compilerPath": "/usr/bin/clang++",
+    "C_Cpp.default.intelliSenseMode": "macos-clang-x64",
+    "C_Cpp.default.includePath": [
+        "${workspaceFolder}/**"
+    ],
+    "clangd.arguments": [
+        "--std=c++17",
+        "--header-insertion=never"
+    ]
 }

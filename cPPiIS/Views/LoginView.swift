@@ -134,16 +134,8 @@ struct LoginView: View {
         } message: {
             Text(errorMessage)
         }
-        .onAppear {
-            // Автоматически заполняем тестовые данные и выполняем вход для демо
-            #if DEBUG
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                fillTestCredentials()
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    performLogin()
-                }
-            }
-            #endif
+                .onAppear {
+            // setupBridgeLogging()
         }
     }
     
@@ -163,50 +155,96 @@ struct LoginView: View {
     private func performLogin() {
         guard isFormValid else { 
             print("🚫 LoginView: Form validation failed")
+            print("   - Student number empty: \(studentNumber.isEmpty)")
+            print("   - Password empty: \(password.isEmpty)")
             return 
         }
         
+        let trimmedStudentNumber = studentNumber.trimmingCharacters(in: .whitespacesAndNewlines)
+        
         print("🚀 LoginView: Starting login process")
-        print("👤 Student Number: \(studentNumber)")
-        print("🔒 Password: [PROTECTED]")
+        print("👤 Student Number: '\(trimmedStudentNumber)'")
+        print("� Password length: \(password.count)")
+        print("� Remember credentials: \(rememberCredentials)")
         
         isLoading = true
-        
-        let trimmedStudentNumber = studentNumber.trimmingCharacters(in: .whitespacesAndNewlines)
         
         BSUIRAPIBridge.shared()?.login(
             withStudentNumber: trimmedStudentNumber,
             password: password
         ) { (user: AnyObject?, error: Error?) in
             let workItem = DispatchWorkItem {
+                // logStore.info("Получен ответ от сервера", category: "Auth")
                 print("🔄 LoginView: Received login response")
                 isLoading = false
                 
                 if let error = error {
+                    // logStore.error("Ошибка аутентификации", category: "Auth", 
+                    //              metadata: ["error": error.localizedDescription])
                     print("❌ LoginView: Login failed with error")
                     print("❌ Error description: \(error.localizedDescription)")
                     
                     // Cast to NSError to access domain and code
                     let nsError = error as NSError
+                    // logStore.debug("Детали ошибки", category: "Auth", 
+                    //              metadata: [
+                    //                 "domain": nsError.domain,
+                    //                 "code": String(nsError.code),
+                    //                 "description": error.localizedDescription
+                    //              ])
                     print("❌ Error domain: \(nsError.domain)")
                     print("❌ Error code: \(nsError.code)")
                     
                     if let failureReason = nsError.localizedFailureReason {
+                        // logStore.debug("Причина ошибки", category: "Auth", 
+                        //              metadata: ["reason": failureReason])
                         print("❌ Failure reason: \(failureReason)")
                     }
                     
                     // Create detailed error message for user
                     var detailedError = error.localizedDescription
-                    if nsError.code == 401 {
-                        detailedError = "Неверный номер студенческого билета или пароль"
-                    } else if nsError.code == 400 {
-                        detailedError = "Неверный формат данных. Проверьте правильность ввода"
-                    } else if nsError.code >= 500 {
-                        detailedError = "Сервер временно недоступен. Попробуйте позже"
-                    } else if nsError.code == -1009 {
-                        detailedError = "Нет подключения к интернету"
+                    
+                    // Check if we have more specific error information
+                    if let userInfo = nsError.userInfo as? [String: Any] {
+                        print("🔍 UserInfo keys: \(userInfo.keys)")
+                        print("🔍 Full UserInfo: \(userInfo)")
+                        
+                        // Try to get the actual server response details
+                        if let failureReason = userInfo[NSLocalizedFailureReasonErrorKey] as? String {
+                            print("📋 Server response details: \(failureReason)")
+                            if failureReason != "No details available" && !failureReason.isEmpty {
+                                detailedError = "Ошибка сервера: \(failureReason)"
+                            }
+                        }
+                        
+                        // Also check for other error details
+                        if let description = userInfo[NSLocalizedDescriptionKey] as? String {
+                            print("📝 Error description: \(description)")
+                        }
+                        
+                        // Try to get more detailed error info
+                        for (key, value) in userInfo {
+                            print("🔑 UserInfo[\(key)]: \(value)")
+                        }
                     }
                     
+                    // Only use generic messages if no specific server info available
+                    if detailedError == error.localizedDescription {
+                        print("🚨 Using fallback error messages for code: \(nsError.code)")
+                        if nsError.code == 401 {
+                            detailedError = "Ошибка 401: Неверный номер студенческого билета или пароль"
+                        } else if nsError.code == 400 {
+                            detailedError = "Ошибка 400: Неверный формат данных. Проверьте правильность ввода"
+                        } else if nsError.code >= 500 {
+                            detailedError = "Ошибка \(nsError.code): Сервер временно недоступен. Попробуйте позже"
+                        } else if nsError.code == -1009 {
+                            detailedError = "Нет подключения к интернету"
+                        } else {
+                            detailedError = "Код ошибки: \(nsError.code) - \(error.localizedDescription)"
+                        }
+                    }
+                    
+                    print("🚨 Final error message to show: \(detailedError)")
                     errorMessage = detailedError
                     showingError = true
                 } else if let user = user {
@@ -231,8 +269,8 @@ struct LoginView: View {
     }
     
     private func fillTestCredentials() {
-        studentNumber = "42850012"
-        password = "Bsuirinyouv.12_"
+        studentNumber = "YOUR_STUDENT_NUMBER"
+        password = "YOUR_PASSWORD"
     }
     
     private func authenticateWithBiometrics() {
@@ -247,9 +285,15 @@ struct LoginView: View {
                     if success {
                         // Load saved credentials and auto-login
                         loadCredentialsFromKeychain()
+                    } else {
+                        if let authError = authenticationError {
+                            print("❌ Biometric authentication failed: \(authError.localizedDescription)")
+                        }
                     }
                 }
             }
+        } else {
+            print("❌ Biometrics not available on this device")
         }
     }
     

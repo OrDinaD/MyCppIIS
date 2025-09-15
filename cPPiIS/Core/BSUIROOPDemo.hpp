@@ -2,6 +2,13 @@
 //  BSUIROOPDemo.hpp
 //  Демонстрация ООП принципов для курсовой работы
 //
+//  @file BSUIROOPDemo.hpp
+//  @brief Comprehensive demonstration of Object-Oriented Programming principles
+//  @details This file contains complete examples of all 4 OOP principles:
+//           Abstraction, Inheritance, Polymorphism, and Encapsulation
+//  @author Course Work on OOP in C++
+//  @date 2024
+//
 
 #ifndef BSUIROOPDemo_hpp
 #define BSUIROOPDemo_hpp
@@ -11,7 +18,12 @@
 #include <memory>
 #include <functional>
 #include <iostream>
+#include <mutex>
 
+/**
+ * @namespace BSUIR
+ * @brief Main namespace for BSUIR IIS application demonstrating OOP principles
+ */
 namespace BSUIR {
 
 // ========================================
@@ -19,8 +31,16 @@ namespace BSUIR {
 // ========================================
 
 /**
- * Абстрактный базовый класс для всех пользователей системы
- * Демонстрирует принцип абстракции и полиморфизма
+ * @class AbstractUser
+ * @brief Абстрактный базовый класс для всех пользователей системы
+ * @details Демонстрирует принцип абстракции и полиморфизма.
+ *          Определяет общий интерфейс для всех типов пользователей,
+ *          скрывая детали реализации в производных классах.
+ * 
+ * Применяемые принципы ООП:
+ * - Абстракция: чисто виртуальные методы определяют интерфейс
+ * - Полиморфизм: виртуальные методы для runtime polymorphism
+ * - Инкапсуляция: защищенные члены доступны только наследникам
  */
 class AbstractUser {
 protected:
@@ -51,8 +71,15 @@ public:
 };
 
 /**
- * Абстрактный класс для API сервисов
- * Демонстрирует Template Method pattern
+ * @class AbstractApiService
+ * @brief Абстрактный класс для API сервисов
+ * @details Демонстрирует Template Method pattern - один из классических
+ *          паттернов проектирования. Определяет общий алгоритм выполнения
+ *          запросов, позволяя наследникам настраивать отдельные шаги.
+ * 
+ * Применяемые паттерны:
+ * - Template Method: makeRequest() определяет алгоритм
+ * - Strategy: различные стратегии валидации и логирования
  */
 class AbstractApiService {
 protected:

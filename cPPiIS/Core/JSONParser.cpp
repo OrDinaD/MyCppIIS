@@ -110,19 +110,42 @@ std::optional<LoginResponse> JSONParser::parseLoginResponse(const std::string& j
     LoginResponse response;
     
     try {
-        response.accessToken = obj["access_token"];
-        response.refreshToken = obj["refresh_token"];
-        response.tokenType = obj["token_type"];
-        response.expiresIn = std::stoi(obj["expires_in"]);
+        // BSUIR API returns user info directly, not OAuth tokens
+        // We'll simulate a session-based authentication
+        response.accessToken = "session_based_auth"; // Placeholder since API uses session cookies
+        response.refreshToken = "";
+        response.tokenType = "Session";
+        response.expiresIn = 3600; // Default session time
         
-        // Parse nested user object (simplified)
-        response.userId = std::stoi(obj["id"]);  // Assuming user data is flattened
-        response.studentNumber = obj["studentNumber"];
-        response.firstName = obj["firstName"];
-        response.lastName = obj["lastName"];
-        response.middleName = obj["middleName"];
+        // Parse user data from the direct response
+        response.studentNumber = obj["username"];
+        
+        // Parse FIO (Full name in Russian format: "Фамилия Имя Отчество")
+        std::string fio = obj["fio"];
+        size_t firstSpace = fio.find(' ');
+        size_t secondSpace = fio.find(' ', firstSpace + 1);
+        
+        if (firstSpace != std::string::npos) {
+            response.lastName = fio.substr(0, firstSpace);
+            if (secondSpace != std::string::npos) {
+                response.firstName = fio.substr(firstSpace + 1, secondSpace - firstSpace - 1);
+                response.middleName = fio.substr(secondSpace + 1);
+            } else {
+                response.firstName = fio.substr(firstSpace + 1);
+                response.middleName = "";
+            }
+        } else {
+            response.lastName = fio;
+            response.firstName = "";
+            response.middleName = "";
+        }
+        
+        // Set a default userId (API doesn't return numeric ID in this response)
+        response.userId = 1; // We'll use 1 as default since we don't have ID in response
         
         std::cout << "✅ JSONParser: Successfully parsed login response" << std::endl;
+        std::cout << "👤 Student: " << response.firstName << " " << response.lastName << std::endl;
+        std::cout << "🎫 Student Number: " << response.studentNumber << std::endl;
         return response;
     } catch (const std::exception& e) {
         std::cout << "❌ JSONParser: Exception parsing login response: " << e.what() << std::endl;
@@ -213,53 +236,100 @@ ApiError JSONParser::parseError(const std::string& json, int httpCode) {
     ApiError error;
     error.code = httpCode;
     
+    // Try different possible error message fields in JSON
     if (obj.count("message")) {
         error.message = obj["message"];
         std::cout << "📄 Found error message: " << error.message << std::endl;
-    } else if (obj.count("error")) {
-        error.message = obj["error"];
-        std::cout << "📄 Found error field: " << error.message << std::endl;
     } else if (obj.count("error_description")) {
         error.message = obj["error_description"];
         std::cout << "📄 Found error_description: " << error.message << std::endl;
-    } else {
-        // Try to extract any useful information from the response
-        if (httpCode == 400) {
-            error.message = "Bad Request - Check credentials format";
-        } else if (httpCode == 401) {
-            error.message = "Unauthorized - Invalid credentials";
-        } else if (httpCode == 403) {
-            error.message = "Forbidden - Access denied";
-        } else if (httpCode == 404) {
-            error.message = "Not Found - API endpoint not available";
-        } else if (httpCode == 500) {
-            error.message = "Internal Server Error - Service temporarily unavailable";
+    } else if (obj.count("error") && obj.count("path")) {
+        // BSUIR API specific format: {"timestamp":..,"status":401,"error":"Unauthorized","path":"/api/v1/auth/login"}
+        std::string errorType = obj["error"];
+        std::string path = obj["path"];
+        std::string status = obj.count("status") ? obj["status"] : std::to_string(httpCode);
+        
+        // Create user-friendly message based on error type and path
+        if (errorType == "Unauthorized" && path.find("/auth/login") != std::string::npos) {
+            error.message = "Неверные учетные данные (номер билета или пароль)";
         } else {
-            error.message = "HTTP " + std::to_string(httpCode) + " error occurred";
+            error.message = "Ошибка " + status + ": " + errorType + " (" + path + ")";
         }
-        std::cout << "📄 Using default error message: " << error.message << std::endl;
+        std::cout << "📄 BSUIR API format error: " << error.message << std::endl;
+    } else if (obj.count("error")) {
+        error.message = obj["error"];
+        std::cout << "📄 Found error field: " << error.message << std::endl;
+    } else if (obj.count("status")) {
+        error.message = obj["status"];
+        std::cout << "📄 Found status field: " << error.message << std::endl;
+    } else {
+        // Fallback error messages
+        if (httpCode == 400) {
+            error.message = "Неверный формат запроса";
+        } else if (httpCode == 401) {
+            error.message = "Неверные учетные данные";
+        } else if (httpCode == 403) {
+            error.message = "Доступ запрещен";
+        } else if (httpCode == 404) {
+            error.message = "API не найден";
+        } else if (httpCode == 500) {
+            error.message = "Внутренняя ошибка сервера";
+        } else {
+            error.message = "HTTP " + std::to_string(httpCode) + " ошибка";
+        }
+        std::cout << "📄 Using fallback error message: " << error.message << std::endl;
     }
     
-    error.details = obj.count("details") ? obj["details"] : json;
+    // Include additional details if available
+    std::string details = "";
+    if (obj.count("details")) {
+        details = obj["details"];
+    } else if (obj.count("timestamp") || obj.count("path")) {
+        // BSUIR API format - include timestamp and path info
+        std::ostringstream detailsStream;
+        if (obj.count("timestamp")) {
+            detailsStream << "Время: " << obj["timestamp"];
+        }
+        if (obj.count("path")) {
+            if (!detailsStream.str().empty()) detailsStream << ", ";
+            detailsStream << "Путь: " << obj["path"];
+        }
+        if (obj.count("status")) {
+            if (!detailsStream.str().empty()) detailsStream << ", ";
+            detailsStream << "Статус: " << obj["status"];
+        }
+        details = detailsStream.str();
+    } else {
+        details = json; // Include full response as details
+    }
     
-    std::cout << "🚨 Final error: Code=" << error.code << ", Message=" << error.message << std::endl;
+    error.details = details;
+    
+    std::cout << "🚨 Final parsed error: Code=" << error.code 
+              << ", Message=" << error.message 
+              << ", Details=" << error.details << std::endl;
     
     return error;
 }
 
-std::string JSONParser::createLoginRequest(const std::string& login, 
+std::string BSUIR::JSONParser::createLoginRequest(const std::string& login, 
                                          const std::string& password, 
                                          bool rememberMe) {
-    // Format 2: Standard BSUIR IIS API login request format
+    // Correct BSUIR IIS API login request format - uses "username" field
     std::ostringstream oss;
     oss << "{"
-        << "\"login\":\"" << login << "\","
-        << "\"password\":\"" << password << "\","
-        << "\"rememberMe\":" << (rememberMe ? "true" : "false")
-        << "}";
+        << "\"username\":\"" << login << "\","
+        << "\"password\":\"" << password << "\"";
+    
+    // Only add rememberMe if it's true (API might not need this field)
+    if (rememberMe) {
+        oss << ",\"rememberMe\":true";
+    }
+    
+    oss << "}";
     
     std::string requestBody = oss.str();
-    std::cout << "🔑 JSONParser: Creating Format 2 login request:" << std::endl;
+    std::cout << "🔑 JSONParser: Creating corrected login request:" << std::endl;
     std::cout << "🔑 Request body: " << requestBody << std::endl;
     
     return requestBody;
