@@ -94,7 +94,7 @@
                 //                                         @"userName": [NSString stringWithFormat:@"%@ %@", user.firstName, user.lastName],
                 //                                         @"userId": [NSString stringWithFormat:@"%d", user.userId]
                 //                                     }];
-                NSLog(@"👤 BSUIRAPIBridge: User object created for %@ %@, ID: %d", user.firstName, user.lastName, user.userId);
+                NSLog(@"👤 BSUIRAPIBridge: User object created for %@ %@, ID: %ld", user.firstName, user.lastName, static_cast<long>(user.userId));
                 
                 completion(user, nil);
             } else if (result.error.has_value()) {

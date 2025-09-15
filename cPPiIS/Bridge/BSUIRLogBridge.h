@@ -57,12 +57,12 @@ typedef NS_ENUM(NSInteger, BSUIRLogLevel) {
                     message:(NSString *)message
                    metadata:(nullable NSDictionary<NSString *, NSString *> *)metadata;
 
-- (void)errorWithCategory:(NSString *)category
-                  message:(NSString *)message
+- (void)errorWithCategory:(nonnull NSString *)category
+                  message:(nonnull NSString *)message
                  metadata:(nullable NSDictionary<NSString *, NSString *> *)metadata;
 
-- (void)successWithCategory:(NSString *)category
-                    message:(NSString *)message
+- (void)successWithCategory:(nonnull NSString *)category
+                    message:(nonnull NSString *)message
                    metadata:(nullable NSDictionary<NSString *, NSString *> *)metadata;
 
 @end
