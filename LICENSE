@@ -1,0 +1,56 @@
+MIT License
+
+Copyright (c) 2025 Vladislav Orlov
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## Educational Use Notice
+
+This project is developed as coursework for "Object-Oriented Programming" discipline 
+at Belarusian State University of Informatics and Radioelectronics (BSUIR).
+
+The primary purpose is educational demonstration of:
+- Object-Oriented Programming principles in C++
+- Modern C++ features and best practices  
+- iOS application development with C++ integration
+- Design patterns implementation
+- Professional software development workflows
+
+### Academic Integrity
+
+While this code is open source under MIT license, students using this code 
+for their own coursework must:
+
+1. **Understand the implementation** - Don't just copy, learn from it
+2. **Cite the source** - Give proper attribution in your documentation
+3. **Add your own contributions** - Extend or modify to show your understanding
+4. **Follow your institution's policy** - Respect academic honesty guidelines
+
+### Contribution Guidelines
+
+This project welcomes contributions that enhance its educational value:
+- Better demonstration of OOP principles
+- Additional design patterns
+- Improved documentation and comments
+- Modern C++ feature showcases
+- iOS integration improvements
+
+For contribution guidelines, see [CONTRIBUTING.md](.github/CONTRIBUTING.md).

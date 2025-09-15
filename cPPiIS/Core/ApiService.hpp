@@ -19,6 +19,9 @@
 
 namespace BSUIR {
 
+// Forward declarations
+class AbstractUser;
+
 /**
  * @brief Callback types for API operations with strong typing
  */
@@ -38,7 +41,7 @@ using GroupInfoCallback = std::function<void(const ApiResult<GroupInfo>&)>;
  * - Polymorphism and virtual methods
  * - Const correctness and modern C++ features
  */
-class ApiService : public AbstractApiService, public Subject {
+class ApiService : public AbstractApiService, public ObserverSubject {
 private:
     std::unique_ptr<HTTPClient> httpClient;
     std::unique_ptr<IConfigProvider> configProvider;
@@ -49,7 +52,18 @@ private:
      * @brief Set authentication token for requests
      * @param token Access token
      */
-    void setAuthToken(const std::string& token);
+    void setAuthToken(const std::string& token) override;
+    
+    /**
+     * @brief Notify observers about user login
+     * @param user Logged in user information
+     */
+    void notifyUserLoggedIn(const AbstractUser* user);
+    
+    /**
+     * @brief Notify observers about user logout
+     */
+    void notifyUserLoggedOut();
     
     /**
      * @brief Handle login response and parse user data

@@ -4,6 +4,9 @@
 //
 //  Objective-C++ implementation using Foundation networking - C++ OOP coursework
 //
+//  GitHub Copilot: Используй современный C++ стиль, RAII принципы, умные указатели
+//  Для Objective-C++ интеграции обеспечивай безопасность памяти
+//
 
 #include "HTTPClient.hpp"
 #include "../Bridge/HTTPClientBridge.h"
@@ -120,55 +123,33 @@ std::string BSUIR::HTTPClient::buildFullUrl(const std::string& endpoint) const {
     return url + cleanEndpoint;
 }
 
-void BSUIR::HTTPClient::get(const std::string& endpoint, ResponseCallback callback) {
-    performRequest(HTTPMethodTypeGET, endpoint, "", {}, callback);
-}
-
 void BSUIR::HTTPClient::get(const std::string& endpoint, 
-        const std::map<std::string, std::string>& headers,
-        ResponseCallback callback) {
+                             ResponseCallback callback,
+                             const std::map<std::string, std::string>& headers) {
     performRequest(HTTPMethodTypeGET, endpoint, "", headers, callback);
 }
 
-void BSUIR::HTTPClient::post(const std::string& endpoint, 
-             const std::string& body,
-             ResponseCallback callback) {
-    std::map<std::string, std::string> defaultContentType = {
-        {"Content-Type", "application/json"}
-    };
-    performRequest(HTTPMethodTypePOST, endpoint, body, defaultContentType, callback);
-}
-
 void BSUIR::HTTPClient::post(const std::string& endpoint,
-                     const std::string& body,
-                     const std::map<std::string, std::string>& headers,
-                     ResponseCallback callback) {
-    performRequest(HTTPMethodTypePOST, endpoint, body, headers, callback);
+                              const std::string& body,
+                              ResponseCallback callback,
+                              const std::map<std::string, std::string>& headers) {
+    auto mergedHeaders = headers.empty() ? 
+        std::map<std::string, std::string>{{"Content-Type", "application/json"}} : headers;
+    performRequest(HTTPMethodTypePOST, endpoint, body, mergedHeaders, callback);
 }
 
 void BSUIR::HTTPClient::put(const std::string& endpoint,
-                    const std::string& body,
-                    ResponseCallback callback) {
-    std::map<std::string, std::string> defaultContentType = {
-        {"Content-Type", "application/json"}
-    };
-    performRequest(HTTPMethodTypePUT, endpoint, body, defaultContentType, callback);
+                             const std::string& body,
+                             ResponseCallback callback,
+                             const std::map<std::string, std::string>& headers) {
+    auto mergedHeaders = headers.empty() ? 
+        std::map<std::string, std::string>{{"Content-Type", "application/json"}} : headers;
+    performRequest(HTTPMethodTypePUT, endpoint, body, mergedHeaders, callback);
 }
 
-void BSUIR::HTTPClient::put(const std::string& endpoint,
-                    const std::string& body,
-                    const std::map<std::string, std::string>& headers,
-                    ResponseCallback callback) {
-    performRequest(HTTPMethodTypePUT, endpoint, body, headers, callback);
-}
-
-void BSUIR::HTTPClient::del(const std::string& endpoint, ResponseCallback callback) {
-    performRequest(HTTPMethodTypeDELETE, endpoint, "", {}, callback);
-}
-
-void BSUIR::HTTPClient::del(const std::string& endpoint,
-                    const std::map<std::string, std::string>& headers,
-                    ResponseCallback callback) {
+void BSUIR::HTTPClient::deleteRequest(const std::string& endpoint,
+                                      ResponseCallback callback,
+                                      const std::map<std::string, std::string>& headers) {
     performRequest(HTTPMethodTypeDELETE, endpoint, "", headers, callback);
 }
 

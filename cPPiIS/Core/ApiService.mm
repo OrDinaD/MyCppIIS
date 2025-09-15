@@ -102,7 +102,7 @@ void ApiService::login(const std::string& studentNumber,
         return;
     }
     
-    std::string requestBody = JSONParser::createLoginRequest(studentNumber, password, true);
+    std::string requestBody = JSONParser::createLoginRequest(studentNumber, password, false); // No rememberMe
     
     if (configProvider && configProvider->isDebugMode()) {
         std::cout << "📤 Login request body: " << requestBody << std::endl;
@@ -139,15 +139,23 @@ void ApiService::handleLoginResponse(const HTTPResponse& response, LoginCallback
         }
         
         auto parseResult = JSONParser::parseLoginResponse(response.data);
-        if (parseResult.success) {
-            setAuthToken(parseResult.data.value().accessToken);
+        if (parseResult.has_value()) {
+            // For BSUIR API, we don't get an access token
+            // Authentication is maintained via session cookies
+            // Set a dummy token to indicate authenticated state
+            setAuthToken("SESSION_AUTHENTICATED");
             
             // Notify observers about successful login
             notifyUserLoggedIn(nullptr); // In real implementation, pass actual user
             
-            callback(parseResult);
+            // Create successful ApiResult
+            ApiResult<LoginResponse> result(std::move(parseResult.value()));
+            callback(result);
         } else {
-            callback(parseResult);
+            // Create error ApiResult from parse failure
+            ApiError error{-1, "Failed to parse login response", "JSON parsing error"};
+            ApiResult<LoginResponse> result(error);
+            callback(result);
         }
     } else {
         auto errorResult = createErrorResult<LoginResponse>("Unexpected status code", response.statusCode);
@@ -191,7 +199,14 @@ void ApiService::getPersonalInfo(PersonalInfoCallback callback) {
 void ApiService::handlePersonalInfoResponse(const HTTPResponse& response, PersonalInfoCallback callback) {
     if (response.success) {
         auto parseResult = JSONParser::parsePersonalInfo(response.data);
-        callback(parseResult);
+        if (parseResult.has_value()) {
+            ApiResult<PersonalInfo> result(std::move(parseResult.value()));
+            callback(result);
+        } else {
+            ApiError error{-1, "Failed to parse personal info", "JSON parsing error"};
+            ApiResult<PersonalInfo> result(error);
+            callback(result);
+        }
     } else {
         auto errorResult = createErrorResult<PersonalInfo>(response.errorMessage, response.statusCode);
         callback(errorResult);
@@ -214,7 +229,14 @@ void ApiService::getMarkbook(MarkbookCallback callback) {
 void ApiService::handleMarkbookResponse(const HTTPResponse& response, MarkbookCallback callback) {
     if (response.success) {
         auto parseResult = JSONParser::parseMarkbook(response.data);
-        callback(parseResult);
+        if (parseResult.has_value()) {
+            ApiResult<Markbook> result(std::move(parseResult.value()));
+            callback(result);
+        } else {
+            ApiError error{-1, "Failed to parse markbook", "JSON parsing error"};
+            ApiResult<Markbook> result(error);
+            callback(result);
+        }
     } else {
         auto errorResult = createErrorResult<Markbook>(response.errorMessage, response.statusCode);
         callback(errorResult);
@@ -237,7 +259,14 @@ void ApiService::getGroupInfo(GroupInfoCallback callback) {
 void ApiService::handleGroupInfoResponse(const HTTPResponse& response, GroupInfoCallback callback) {
     if (response.success) {
         auto parseResult = JSONParser::parseGroupInfo(response.data);
-        callback(parseResult);
+        if (parseResult.has_value()) {
+            ApiResult<GroupInfo> result(std::move(parseResult.value()));
+            callback(result);
+        } else {
+            ApiError error{-1, "Failed to parse group info", "JSON parsing error"};
+            ApiResult<GroupInfo> result(error);
+            callback(result);
+        }
     } else {
         auto errorResult = createErrorResult<GroupInfo>(response.errorMessage, response.statusCode);
         callback(errorResult);
@@ -271,10 +300,8 @@ const IConfigProvider& ApiService::getConfig() const {
 
 template<typename T>
 ApiResult<T> ApiService::createErrorResult(const std::string& message, int code) {
-    ApiResult<T> result;
-    result.success = false;
-    result.error = ApiError{code, message, ""};
-    return result;
+    ApiError error{code, message, ""};
+    return ApiResult<T>(error);
 }
 
 // ========================================
@@ -302,151 +329,15 @@ std::unique_ptr<ApiService> ApiServiceFactory::createCustomService(
     return std::make_unique<ApiService>(std::move(config));
 }
 
-} // namespace BSUIR
-        auto loginData = JSONParser::parseLoginResponse(response.data);
-        if (loginData.has_value()) {
-            NSLog(@"🎉 Login successful! Session established");
-            currentAccessToken = loginData->accessToken;
-            currentRefreshToken = loginData->refreshToken;
-            // No need to set Authorization header - API uses session cookies
-            callback(ApiResult<LoginResponse>(std::move(loginData.value())));
-        } else {
-            NSLog(@"💥 Failed to parse login response JSON");
-            ApiError error;
-            error.code = 500;
-            error.message = "Failed to parse server response";
-            error.details = response.data;
-            NSLog(@"🔴 Parse error: Code=%d, Message=%s", error.code, error.message.c_str());
-            callback(ApiResult<LoginResponse>(error));
-        }
-    } else {
-        NSLog(@"🔴 Login failed with HTTP status: %d", response.statusCode);
-        NSLog(@"🔍 Full error response: %s", response.data.c_str());
-        ApiError error = JSONParser::parseError(response.data, response.statusCode);
-        NSLog(@"🔴 Parsed error details: Code=%d, Message=%s, Details=%s", 
-              error.code, error.message.c_str(), error.details.c_str());
-        callback(ApiResult<LoginResponse>(error));
-    }
+// Notification methods implementation
+void ApiService::notifyUserLoggedIn(const AbstractUser* user) {
+    // Notify all observers that user has logged in using the ObserverSubject method
+    ObserverSubject::notifyUserLoggedIn(user);
 }
 
-void ApiService::logout() {
-    currentAccessToken.clear();
-    currentRefreshToken.clear();
-    // No need to remove Authorization header since we don't use it
-    NSLog(@"👋 ApiService: Session cleared");
-}
-
-bool ApiService::isAuthenticated() const {
-    return !currentAccessToken.empty();
-}
-
-void ApiService::getPersonalInfo(PersonalInfoCallback callback) {
-    if (!isAuthenticated()) {
-        ApiError error;
-        error.code = 401;
-        error.message = "Not authenticated";
-        callback(ApiResult<PersonalInfo>(error));
-        return;
-    }
-    
-    httpClient->get(API_PERSONAL_INFO_ENDPOINT, [this, callback](const HTTPResponse& response) {
-        this->handlePersonalInfoResponse(response, callback);
-    });
-}
-
-void ApiService::handlePersonalInfoResponse(const HTTPResponse& response, PersonalInfoCallback callback) {
-    if (response.statusCode == 200) {
-        auto personalInfo = JSONParser::parsePersonalInfo(response.data);
-        if (personalInfo.has_value()) {
-            callback(ApiResult<PersonalInfo>(std::move(personalInfo.value())));
-        } else {
-            ApiError error = JSONParser::parseError(response.data, response.statusCode);
-            callback(ApiResult<PersonalInfo>(error));
-        }
-    } else {
-        ApiError error = JSONParser::parseError(response.data, response.statusCode);
-        callback(ApiResult<PersonalInfo>(error));
-    }
-}
-
-void ApiService::getMarkbook(MarkbookCallback callback) {
-    if (!isAuthenticated()) {
-        ApiError error;
-        error.code = 401;
-        error.message = "Not authenticated";
-        callback(ApiResult<Markbook>(error));
-        return;
-    }
-    
-    httpClient->get(API_MARKBOOK_ENDPOINT, [this, callback](const HTTPResponse& response) {
-        this->handleMarkbookResponse(response, callback);
-    });
-}
-
-void ApiService::handleMarkbookResponse(const HTTPResponse& response, MarkbookCallback callback) {
-    if (response.statusCode == 200) {
-        auto markbook = JSONParser::parseMarkbook(response.data);
-        if (markbook.has_value()) {
-            callback(ApiResult<Markbook>(std::move(markbook.value())));
-        } else {
-            ApiError error = JSONParser::parseError(response.data, response.statusCode);
-            callback(ApiResult<Markbook>(error));
-        }
-    } else {
-        ApiError error = JSONParser::parseError(response.data, response.statusCode);
-        callback(ApiResult<Markbook>(error));
-    }
-}
-
-void ApiService::getGroupInfo(GroupInfoCallback callback) {
-    if (!isAuthenticated()) {
-        ApiError error;
-        error.code = 401;
-        error.message = "Not authenticated";
-        callback(ApiResult<GroupInfo>(error));
-        return;
-    }
-    
-    httpClient->get(API_GROUP_INFO_ENDPOINT, [this, callback](const HTTPResponse& response) {
-        this->handleGroupInfoResponse(response, callback);
-    });
-}
-
-void ApiService::handleGroupInfoResponse(const HTTPResponse& response, GroupInfoCallback callback) {
-    if (response.statusCode == 200) {
-        auto groupInfo = JSONParser::parseGroupInfo(response.data);
-        if (groupInfo.has_value()) {
-            callback(ApiResult<GroupInfo>(std::move(groupInfo.value())));
-        } else {
-            ApiError error = JSONParser::parseError(response.data, response.statusCode);
-            callback(ApiResult<GroupInfo>(error));
-        }
-    } else {
-        ApiError error = JSONParser::parseError(response.data, response.statusCode);
-        callback(ApiResult<GroupInfo>(error));
-    }
-}
-
-void ApiService::setTokens(const std::string& accessToken, const std::string& refreshToken) {
-    currentAccessToken = accessToken;
-    currentRefreshToken = refreshToken;
-    setAuthToken(accessToken);
-}
-
-std::string ApiService::getAccessToken() const {
-    return currentAccessToken;
-}
-
-std::string ApiService::getRefreshToken() const {
-    return currentRefreshToken;
-}
-
-template<typename T>
-ApiResult<T> ApiService::createErrorResult(const std::string& message, int code) {
-    ApiError error;
-    error.code = code;
-    error.message = message;
-    return ApiResult<T>(error);
+void ApiService::notifyUserLoggedOut() {
+    // Notify all observers that user has logged out using the ObserverSubject method
+    ObserverSubject::notifyUserLoggedOut();
 }
 
 } // namespace BSUIR

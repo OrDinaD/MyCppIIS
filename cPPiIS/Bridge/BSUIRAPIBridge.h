@@ -32,6 +32,8 @@ typedef void (^BSUIRPersonalInfoCompletion)(BSUIRPersonalInfo* _Nullable info, N
 typedef void (^BSUIRMarkbookCompletion)(BSUIRMarkbook* _Nullable markbook, NSError* _Nullable error);
 typedef void (^BSUIRGroupInfoCompletion)(BSUIRGroupInfo* _Nullable groupInfo, NSError* _Nullable error);
 
+NS_ASSUME_NONNULL_BEGIN
+
 // Main API Bridge Interface
 @interface BSUIRAPIBridge : NSObject
 
@@ -53,9 +55,11 @@ typedef void (^BSUIRGroupInfoCompletion)(BSUIRGroupInfo* _Nullable groupInfo, NS
 
 // Token management
 - (void)setAccessToken:(NSString*)accessToken refreshToken:(NSString*)refreshToken;
-- (NSString*)getAccessToken;
-- (NSString*)getRefreshToken;
+- (nullable NSString*)getAccessToken;
+- (nullable NSString*)getRefreshToken;
 
 @end
+
+NS_ASSUME_NONNULL_END
 
 #endif /* BSUIRAPIBridge_h */

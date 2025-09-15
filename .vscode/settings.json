@@ -16,5 +16,11 @@
     "clangd.arguments": [
         "--std=c++17",
         "--header-insertion=never"
-    ]
+    ],
+    "terminal.integrated.suggest.enabled": true,
+    "terminal.integrated.shellIntegration.enabled": true,
+    "github.copilot.terminal.auto-approve": true,
+    "github.copilot.terminal.matchCommandLine": true,
+    "github.copilot.terminal.dangerousCommands": ["rm", "sudo", "chmod"],
+    "github.copilot.terminal.allowedCommands": ["git", "npm", "yarn", "cd", "ls", "mkdir", "touch"]
 }

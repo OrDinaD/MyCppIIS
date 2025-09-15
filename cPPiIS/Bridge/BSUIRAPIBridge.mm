@@ -28,7 +28,16 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _apiService = std::make_unique<BSUIR::ApiService>(API_BASE_URL);
+        // Create configuration provider with base URL
+        auto config = std::make_unique<BSUIR::AppConfigProvider>(
+            API_BASE_URL,  // baseUrl
+            "1.0.0",       // version
+            true,          // debug mode
+            30,            // timeout in seconds
+            3              // max retries
+        );
+        
+        _apiService = std::make_unique<BSUIR::ApiService>(std::move(config));
         
         NSLog(@"🚀 BSUIRAPIBridge: Initialized with base URL: %s", API_BASE_URL);
     }

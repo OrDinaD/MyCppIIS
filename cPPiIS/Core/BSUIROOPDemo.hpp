@@ -443,7 +443,7 @@ public:
     virtual void onDataUpdated(const std::string& dataType) = 0;
 };
 
-class Subject {
+class ObserverSubject {
 private:
     std::vector<Observer*> observers;
     

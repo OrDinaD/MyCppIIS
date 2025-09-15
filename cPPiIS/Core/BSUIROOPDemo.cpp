@@ -40,7 +40,7 @@ public:
 /**
  * Основной класс приложения, демонстрирующий все ООП принципы
  */
-class BSUIRApplication : public Subject {
+class BSUIRApplication : public ObserverSubject {
 private:
     UserManager userManager;
     std::unique_ptr<AuthenticationService> authService;

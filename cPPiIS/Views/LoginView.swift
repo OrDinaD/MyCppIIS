@@ -169,7 +169,7 @@ struct LoginView: View {
         
         isLoading = true
         
-        BSUIRAPIBridge.shared()?.login(
+        BSUIRAPIBridge.shared().login(
             withStudentNumber: trimmedStudentNumber,
             password: password
         ) { (user: AnyObject?, error: Error?) in

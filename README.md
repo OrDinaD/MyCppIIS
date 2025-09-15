@@ -1,11 +1,21 @@
-# cPPiIS - iOS приложение с C++ бэкендом
+# 📱 cPPiIS - Курсовой проект по ООП
 
-## Описание проекта
+<div align="center">
 
-**cPPiIS** (C++ Powered iOS Information System) - это мобильное iOS приложение для работы с информационной системой БГУИР, демонстрирующее современные принципы объектно-ориентированного программирования на C++.
+![iOS](https://img.shields.io/badge/iOS-18.6-blue.svg)
+![Xcode](https://img.shields.io/badge/Xcode-16-brightgreen.svg)
+![Swift](https://img.shields.io/badge/Swift-5.9-orange.svg)
+![C++](https://img.shields.io/badge/C++-17/20-red.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-> **Курсовая работа по ООП на C++**  
-> Проект создан для демонстрации глубокого понимания принципов ООП, паттернов проектирования и современных практик разработки на C++.
+</div>
+
+## 📋 Описание проекта
+
+**cPPiIS** (C++ Powered iOS Information System) - это мобильное iOS приложение, интегрированное с информационной системой БГУИР, демонстрирующее профессиональное применение объектно-ориентированного программирования на современном C++.
+
+> **🎓 Курсовая работа по дисциплине "Объектно-ориентированное программирование"**  
+> Проект создан для демонстрации глубокого понимания принципов ООП, паттернов проектирования, современных практик разработки на C++ и интеграции с iOS экосистемой.
 
 ## 🎯 Цели проекта
 
@@ -17,25 +27,48 @@
 
 ## 🏗️ Архитектура
 
-### Основные компоненты
+## 📁 Структура проекта
 
 ```
 cPPiIS/
-├── Core/                    # Основная бизнес-логика на C++
-│   ├── BSUIROOPDemo.hpp    # Демонстрация ООП принципов
-│   ├── ApiService.hpp      # Главный API сервис
-│   ├── HTTPClient.hpp      # HTTP клиент с упрощенным API
-│   ├── IConfigProvider.hpp # Интерфейс конфигурации (DI)
-│   ├── SecureTokenStorage.hpp # Безопасное хранение токенов
-│   └── Models.hpp          # Модели данных
-├── Bridge/                  # Objective-C++ мосты
-│   ├── BSUIRAPIBridge.mm   # Мост между Swift и C++
-│   └── HTTPClientBridge.h  # HTTP клиент мост
-└── Views/                   # SwiftUI интерфейс
-    ├── LoginView.swift     # Экран входа
-    ├── ProfileView.swift   # Профиль пользователя
-    └── MainNavigationView.swift # Навигация
+├── 📁 Core/                      # C++ бизнес-логика
+│   ├── 🧬 BSUIROOPDemo.hpp      # Демонстрация ООП принципов
+│   ├── 🌐 ApiService.hpp        # Главный API сервис
+│   ├── 📡 HTTPClient.hpp        # HTTP клиент
+│   ├── ⚙️ IConfigProvider.hpp   # Интерфейс конфигурации (DI)
+│   ├── 🔐 SecureTokenStorage.hpp # Безопасное хранение токенов
+│   ├── 📊 Models.hpp           # Модели данных
+│   └── 🔧 JSONParser.hpp       # JSON парсер
+├── 📁 Bridge/                   # Objective-C++ мосты
+│   ├── 🌉 BSUIRAPIBridge.mm    # Мост Swift ↔ C++
+│   ├── 🔄 HTTPClientBridge.mm  # HTTP клиент мост
+│   └── 📝 BSUIRLogBridge.mm    # Логирование мост
+├── 📁 Views/                    # SwiftUI интерфейс
+│   ├── 🔐 LoginView.swift      # Экран входа
+│   ├── 👤 ProfileView.swift    # Профиль пользователя
+│   ├── 📋 MarkbookView.swift   # Зачетная книжка
+│   ├── 👥 GroupInfoView.swift  # Информация о группе
+│   └── 🧭 MainNavigationView.swift # Навигация
+├── 📁 Models/                   # Swift модели (пустая - используем C++)
+├── 📄 test_api*.py             # Python тесты API
+├── 📜 *.md                     # Документация
+└── 🔧 Config.h                 # Конфигурация проекта
 ```
+
+## 🛠️ Технологический стек
+
+### Основные технологии
+- **🍎 Swift + SwiftUI**: Пользовательский интерфейс
+- **⚡ C++17/20**: Бизнес-логика и алгоритмы
+- **🔄 Objective-C++**: Мост между Swift и C++
+- **🌐 HTTP/REST**: Сетевое взаимодействие
+- **🔒 Keychain Services**: Безопасное хранение
+
+### Инструменты разработки
+- **🔨 Xcode 16**: Основная IDE
+- **🐍 Python**: Тестирование API
+- **📋 Doxygen**: Генерация документации
+- **🔍 Static Analysis**: Встроенные анализаторы Xcode
 
 ## 🔧 Применяемые принципы ООП
 
@@ -280,26 +313,51 @@ public:
 - ✅ Интеграция всех ООП принципов в реальный функционал
 - ✅ Полная документация с Doxygen комментариями
 
-## 🚀 Как запустить
+## 🚀 Быстрый старт
+
+### Системные требования
+
+- **macOS**: 14.0+ (Sonoma)
+- **Xcode**: 16.0+
+- **iOS Deployment Target**: 18.6+
+- **Swift**: 5.9+
+- **C++ Standard**: 17/20
+
+### Установка и запуск
 
 1. **Клонировать репозиторий**
    ```bash
-   git clone [repository-url]
+   git clone https://github.com/OrDinaD/MyCppIIS.git
    cd cPPiIS
    ```
 
-2. **Открыть в Xcode**
+2. **Открыть проект в Xcode**
    ```bash
    open cPPiIS.xcodeproj
    ```
 
-3. **Настроить учетные данные**
-   - Обновите `test_api.py` с вашими данными
-   - Обновите `fillTestCredentials()` в `LoginView.swift`
+3. **Настроить команду разработчика**
+   - В Xcode перейдите в настройки проекта
+   - Выберите вашу Developer Team
+   - Обновите Bundle Identifier если необходимо
 
-4. **Собрать и запустить**
-   - Выберите симулятор или устройство
-   - Нажмите ⌘+R для запуска
+4. **Сборка и запуск**
+   - Выберите симулятор iPhone 16 Pro или физическое устройство
+   - Нажмите `⌘+R` для сборки и запуска
+
+### Для тестирования API
+
+1. **Настройте Python environment**
+   ```bash
+   python3 -m pip install requests
+   ```
+
+2. **Запустите тесты**
+   ```bash
+   python3 test_api.py           # Базовые тесты
+   python3 test_api_detailed.py  # Подробные тесты
+   python3 test_api_sessions.py  # Тесты сессий
+   ```
 
 ## 🧪 Тестирование
 
@@ -337,6 +395,15 @@ doxygen Doxyfile  # Генерация HTML документации
 
 ---
 
-*Автор: [Ваше имя]*  
-*Курс: Объектно-ориентированное программирование*  
-*Учебное заведение: БГУИР*
+**👨‍💻 Автор**: Владислав Орлов  
+**📚 Дисциплина**: Объектно-ориентированное программирование  
+**🏫 Учебное заведение**: БГУИР  
+**📅 Год**: 2025
+
+<div align="center">
+
+**Проект демонстрирует профессиональное владение современным C++ и принципами ООП**
+
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-black?logo=github)](https://github.com/OrDinaD/MyCppIIS)
+
+</div>

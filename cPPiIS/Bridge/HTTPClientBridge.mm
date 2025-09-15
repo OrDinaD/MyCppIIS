@@ -105,9 +105,22 @@ void performHTTPRequest(const char* url,
         request.HTTPBody = [bodyString dataUsingEncoding:NSUTF8StringEncoding];
     }
     
-    // Create session
+    // Create session with persistent cookie storage
     NSURLSessionConfiguration* config = [NSURLSessionConfiguration defaultSessionConfiguration];
-    NSURLSession* session = [NSURLSession sessionWithConfiguration:config];
+    
+    // Configure cookie storage to persist cookies across requests
+    config.HTTPCookieStorage = [NSHTTPCookieStorage sharedHTTPCookieStorage];
+    config.HTTPCookieAcceptPolicy = NSHTTPCookieAcceptPolicyAlways;
+    config.HTTPShouldSetCookies = YES;
+    
+    // Create session - use shared session for cookie persistence
+    static NSURLSession* persistentSession = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        persistentSession = [NSURLSession sessionWithConfiguration:config];
+    });
+    
+    NSURLSession* session = persistentSession;
     
     // Perform request
     NSURLSessionDataTask* task = [session dataTaskWithRequest:request 
